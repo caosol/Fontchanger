@@ -27,8 +27,15 @@
 - All Android versions
 
 ## Credits
-- <a href="https://forum.xda-developers.com/android/themes/fonts-flashable-zips-t3219827">
-@giaton @xdadevelopers
-  </a>
-
+- <a href="https://forum.xda-developers.com/android/themes/fonts-flashable-zips-t3219827">@giaton @xdadevelopers</a>
 - @oldmid @xdadevelopers
+
+## Changelog
+
+### v1.1 - 6.11.2019
+* Fix Duplicate fonts being applied by removing old font files when applying a new font
+* Fix custom fonts showing in a list correctly
+* Rename custom font files to roboto since roboto is 99% of the time the default font
+
+### v1 - 6.04.2019
+* Initial Version

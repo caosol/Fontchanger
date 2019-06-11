@@ -138,6 +138,7 @@ on_install() {
 if $BOOTMODE; then
     test_connection
   if [ $? -eq 0 ]; then
+    rm /storage/emulated/0/Fontchanger/fonts-list.txt
     mkdir -p /storage/emulated/0/Fontchanger/Fonts/Custom
     curl -k -o /storage/emulated/0/Fontchanger/fonts-list.txt https://john-fawkes.com/Downloads/fontlist/fonts-list.txt
     if [ -f /storage/emulated/0/Fontchanger/fonts-list.txt ]; then
@@ -151,7 +152,7 @@ if $BOOTMODE; then
 else
   cancel " [-] TWRP Install NOT Supported. Please Install Booted with Internet Connection... "
 fi
-  imageless_magisk && sed -i "s|MODPATH=/data/adb/modules|MODPATH=/sbin/.magisk/img|" $MODPATH/system/bin/font_changer
+  imageless magisk || sed -i "s|MODPATH=/data/adb/modules|MODPATH=/sbin/.magisk/img|" $MODPATH/system/bin/font_changer
   cp -f $TMPDIR/curl-$ARCH32 $MODPATH/curl
 }
 
@@ -168,7 +169,7 @@ set_permissions() {
   
   ui_print " "
   ui_print " [-] After Installing type font_changer in terminal [-]"
-  ui_print " [-] Then Choose Option 3 to Read the How-to on How to Set up your Fonts [-]"
+  ui_print " [-] Then Choose Option 5 to Read the How-to on How to Set up your Fonts [-]"
   sleep 3
 
   # Here are some examples:

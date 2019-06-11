@@ -71,7 +71,7 @@ else
   BBox=false
   echo "! Busybox not detected" >> $LOG
  echo "Please install one (@osm0sis' busybox recommended)" >> $LOG
-  for applet in cat chmod cp grep md5sum mv printf sed sort tar tee tr unzip wget; do
+  for applet in cat chmod cp curl grep md5sum mv printf sed sort tar tee tr unzip wget; do
     [ "$($applet)" ] || quit 1
   done
   echo "All required applets present, continuing" >> $LOG
@@ -301,9 +301,14 @@ sleep 2
 #  for i in $(find $MODPATH/system/fonts/GoogleSans-* | sed 's|.*-||'); do
 #    sed -i "s|*Roboto*$i|GoogleSans-$i|" $MODPATH/system/etc/fonts.xml
 #  done
-choice2=$(grep $choice $MODPATH/customfontlist.txt | tr -d [$num] | tr -d ' ')
+choice2=$(grep $choice $MODPATH/customfontlist.txt | tr -d "[$num]" | tr -d ' ')
+rm -rf $MODPATH/system/fonts > /dev/null 2>&1
 mkdir -p $MODPATH/system/fonts > /dev/null 2>&1
 cp -f $FCDIR/Fonts/Custom/$choice2/* $MODPATH/system/fonts > /dev/null 2>&1
+find $MODPATH/system/fonts -type f -name "$choice2*" | while read FILE ; do
+  newfile="$(echo ${FILE} |sed -e s/$choice2/Roboto/)"
+  mv "${FILE}" "${newfile}"
+done
 set_perm_recursive $MODPATH/system/fonts 0 0 0755 0644 > /dev/null 2>&1
 truncate -s 0 $CFONT
 echo -n "CURRENT=$choice2" >> $CFONT
@@ -327,7 +332,7 @@ list_custom_fonts() {
   done
 }
 
-apply_font(){
+apply_font() {
 echo -e "${B}Applying Font. Please Wait...${N}"
 sleep 2
 #  cp -rf /system/etc/fonts.xml $MODPATH/system/etc/fonts.xml
@@ -366,11 +371,11 @@ list_fonts() {
 
 font_menu() {
   choice=""
-  wrong=$(cat $FCDIR/fonts-list.txt | wc -l) 
 while [ "$choice" != "q" ]; do
   list_fonts
   break
 done
+wrong=$(cat $FCDIR/fontlist.txt | wc -l)
 echo -e "${G}Please Choose a Font to Apply. Enter the Corresponding Number...${N}"
 read -r choice
   case $choice in
@@ -390,7 +395,7 @@ read -r choice
   esac
 }
 
-default_menu () {
+default_menu() {
   choice=""
   while [ "$choice" != "q" ]; do
   echo -e "${G}Would You Like to Restore your Default Font?${N}"
@@ -417,11 +422,11 @@ default_menu () {
 
 custom_menu() {
 choice=""
-wrong=$(cat $MODPATH/fontlist.txt | wc -l) 
   while [ "$choice" != "q" ]; do
   list_custom_fonts
   break
   done
+  wrong=$(cat $MODPATH/customfontlist.txt | wc -l) 
   echo -e "${G}Please Choose a Font to Apply. Enter the Corresponding Number...${N}"
   read -r choice
   case $choice in
@@ -457,9 +462,7 @@ choice=""
     echo " "
     pcenter "${B}Welcome to Font Changer!${N}"
     echo " "
-    echo "${R}IF THIS IS YOUR FIRST TIME PLEASE CHOOSE OPTION 3 TO SEE HOW TO SET UP YOUR FONTS!${N}"
-    echo " "
-    echo "${R}I WILL NOT PROVIDE FONT FILES!${N}"
+    echo "${R}IF THIS IS YOUR FIRST TIME PLEASE CHOOSE OPTION 5 TO SEE HOW TO SET UP YOUR CUSTOM FONTS!${N}"
     echo " "
     FONT=$(get_file_value $CFONT CURRENT=)
     if [ $FONT ] ; then
@@ -476,7 +479,9 @@ choice=""
     echo " "
     echo -e "${W}[3]${N} ${G}- Change to Stock Font${N}"
     echo " "
-    echo -e "${W}[4]${N} ${G}- How to Set Up the Font Folder${N}"
+#    echo -e "${W}[4]${N} ${G}- Change Emojis"${N}
+#    echo " "
+    echo -e "${W}[5]${N} ${G}- How to Set Up the Font Folder${N}"
     echo " "
     echo -e "${R}[Q] - Quit${N}"
     echo " "
@@ -493,7 +498,10 @@ choice=""
       3) echo "${B}[-] Stock Font Menu Selected...${N}"
         default_menu
         ;;
-      4) echo " ${C}Help Selected...${N}"
+#      4) echo "${R}[-] Emoji Menu Selected...${N}"
+#        emoji_menu
+#        ;;
+      5) echo "${C}[-] Help Selected...${N}"
         help
         ;;
       q|Q) echo "${R}[-] Quiting...${N}"
@@ -505,12 +513,6 @@ choice=""
         clear
         ;;
     esac
-  done
-}
-
-menu
-
-quit $? esac
   done
 }
 
