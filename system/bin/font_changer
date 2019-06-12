@@ -325,8 +325,9 @@ read -r mchoice
 list_custom_fonts() {
   num=0
   rm $MODPATH/customfontlist.txt > /dev/null 2>&1
+  touch $MODPATH/customfontlist.txt > /dev/null 2>&1
   for i in $(ls "$FCDIR/Fonts/Custom" | sort); do
-    touch $MODPATH/customfontlist.txt > /dev/null 2>&1
+    sleep 0.1
     num=$((num+1))
     echo -e "[$num] $i" >> $MODPATH/customfontlist.txt && echo "${W}[$num]${N} ${B}$i${N}"
   done
@@ -340,6 +341,7 @@ sleep 2
 #    sed -i "s|*Roboto*$i|GoogleSans-$i|" $MODPATH/system/etc/fonts.xml
 #  done
 choice2=$(grep $choice $MODPATH/fontlist.txt | tr -d $choice | tr -d '[ ]' | tr -d ' ')
+rm -rf $MODPATH/system/fonts > /dev/null 2>&1
 mkdir -p $MODPATH/system/fonts > /dev/null 2>&1
 curl -k -o $FCDIR/Fonts/$choice2.zip https://john-fawkes.com/Downloads/$choice2.zip
 unzip -o "$FCDIR/Fonts/$choice2.zip" 'system/*' -d $MODPATH >&2 
@@ -479,7 +481,7 @@ choice=""
     echo " "
     echo -e "${W}[3]${N} ${G}- Change to Stock Font${N}"
     echo " "
-#    echo -e "${W}[4]${N} ${G}- Change Emojis"${N}
+#    echo -e "${W}[4]${N} ${G}- Change Emojis${N}"
 #    echo " "
     echo -e "${W}[5]${N} ${G}- How to Set Up the Font Folder${N}"
     echo " "
