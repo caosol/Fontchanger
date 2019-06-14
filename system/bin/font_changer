@@ -377,7 +377,7 @@ while [ "$choice" != "q" ]; do
   list_fonts
   break
 done
-wrong=$(cat $FCDIR/fontlist.txt | wc -l)
+wrong=$(cat $MODPATH/fontlist.txt | wc -l)
 echo -e "${G}Please Choose a Font to Apply. Enter the Corresponding Number...${N}"
 read -r choice
   case $choice in

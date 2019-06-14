@@ -1,7 +1,7 @@
 id=Fontchanger
 name=Font Changer
-version=v1.1
-versionCode=2
+version=v1.2
+versionCode=3
 author=John Fawkes
 description=A Terminal Script to Apply User Provided Fonts
 support=https://github.com/johnfawkes/fontchanger

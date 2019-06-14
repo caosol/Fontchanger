@@ -32,6 +32,9 @@
 
 ## Changelog
 
+### v1.2 - 6.14.2019
+* Fix typo with fonts. fonts will be found now. sorry about that
+
 ### v1.1 - 6.11.2019
 * Fix Duplicate fonts being applied by removing old font files when applying a new font
 * Fix custom fonts showing in a list correctly
