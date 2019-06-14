@@ -21,6 +21,9 @@
   </h3>
 </div>
 
+## Support
+- Please open an issue on my github page <a href="https://github.com/johnfawkes/fontchanger"> Github </a> or if your on Telegram please join <a href="https://t.me/fontchange_magisk"> Telegram </a> Telegram i will see and fix the issue faster as I am always on Telegram.
+
 ## Compatibility
 - Magisk 18.0 +
 - All devices
