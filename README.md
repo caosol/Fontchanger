@@ -28,6 +28,7 @@
 - Magisk 18.0 +
 - All devices
 - All Android versions
+- Roboto font as default font (until further notice)
 
 ## Credits
 - <a href="https://forum.xda-developers.com/android/themes/fonts-flashable-zips-t3219827">@giaton @xdadevelopers</a>
