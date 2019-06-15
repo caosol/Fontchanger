@@ -36,6 +36,11 @@
 
 ## Changelog
 
+### v1.3 - 6.14.2019
+* Fix issue with curl choosing multiple fonts. Everything below 100 will work now. 
+* Fix ttf typo in help
+* Other bug fixes/typos
+
 ### v1.2 - 6.14.2019
 * Fix typo with fonts. fonts will be found now. sorry about that
 

@@ -1,4 +1,4 @@
-#!/system/bin/sh
+9#!/system/bin/sh
 # Terminal Magisk Mod Template
 # by veez21 @ xda-developers
 # Modified by @JohnFawkes - Telegram
@@ -278,15 +278,15 @@ while [ "$choice" != "q" ]; do
   echo "          |--Fonts/"
   echo "              |--Custom/"
   echo -e "              ${R}|--<font-folder-name>/${N}"
-  echo -e "                       ${G}|--<font>.tff${N}"
-  echo -e "                       ${G}|--<font>.tff${N}"
+  echo -e "                       ${G}|--<font>.ttf${N}"
+  echo -e "                       ${G}|--<font>.ttf${N}"
   echo " "
   echo " You Need To Place Your Font Folders in /storage/emulated/0/Fontchanger/Fonts/Custom."
   echo " The Folder in ${R}RED${N} is Name of the Font You Want to Apply."
-  echo " This Would be the Main Folder That Holds the tff Files for That Font."
-  echo " The Files in ${G}GREEN${N} are the tff Files For That Specific Font."
+  echo " This Would be the Main Folder That Holds the ttf Files for That Font."
+  echo " The Files in ${G}GREEN${N} are the ttf Files For That Specific Font."
   echo " You Can Have Multiple Font Folders Inside the Fontchanger/Fonts Folder."
-  echo " After Creating and Placing the Correct Folders and tff Files in the Fonts Folder"
+  echo " After Creating and Placing the Correct Folders and ttf Files in the Fonts Folder"
   echo " Please Come Back to Apply the Font of Your Choice"
   echo -n "${R}Return to menu? < y | n > : ${N}"
   read -r mchoice
@@ -297,13 +297,13 @@ done
 apply_custom_font(){
 echo -e "${B}Applying Font. Please Wait...${N}"
 sleep 2
-#  cp -rf /system/etc/fonts.xml $MODPATH/system/etc/fonts.xml
-#  for i in $(find $MODPATH/system/fonts/GoogleSans-* | sed 's|.*-||'); do
-#    sed -i "s|*Roboto*$i|GoogleSans-$i|" $MODPATH/system/etc/fonts.xml
-#  done
-choice2=$(grep $choice $MODPATH/customfontlist.txt | tr -d "[$num]" | tr -d ' ')
+choice2=$(grep -w $choice $MODPATH/customfontlist.txt | tr -d "[$num]" | tr -d ' ')
 rm -rf $MODPATH/system/fonts > /dev/null 2>&1
 mkdir -p $MODPATH/system/fonts > /dev/null 2>&1
+mkdir -p $MODPATH/system/etc > /dev/null 2>&1
+curl -k -o "$FCDIR/Fonts/fonts.xml" https://john-fawkes.com/Downloads/xml/fonts.xml
+cp -f $FCDIR/Fonts/fonts.xml $MODPATH/system/etc
+set_perm $MODPATH/system/etc/fonts.xml 0 0 0644
 cp -f $FCDIR/Fonts/Custom/$choice2/* $MODPATH/system/fonts > /dev/null 2>&1
 find $MODPATH/system/fonts -type f -name "$choice2*" | while read FILE ; do
   newfile="$(echo ${FILE} |sed -e s/$choice2/Roboto/)"
@@ -336,14 +336,14 @@ list_custom_fonts() {
 apply_font() {
 echo -e "${B}Applying Font. Please Wait...${N}"
 sleep 2
-#  cp -rf /system/etc/fonts.xml $MODPATH/system/etc/fonts.xml
-#  for i in $(find $MODPATH/system/fonts/GoogleSans-* | sed 's|.*-||'); do
-#    sed -i "s|*Roboto*$i|GoogleSans-$i|" $MODPATH/system/etc/fonts.xml
-#  done
-choice2=$(grep $choice $MODPATH/fontlist.txt | tr -d $choice | tr -d '[ ]' | tr -d ' ')
+choice2="$(grep -w $choice $MODPATH/fontlist.txt | tr -d '[ ]' | tr -d $choice | tr -d ' ')"
 rm -rf $MODPATH/system/fonts > /dev/null 2>&1
 mkdir -p $MODPATH/system/fonts > /dev/null 2>&1
-curl -k -o $FCDIR/Fonts/$choice2.zip https://john-fawkes.com/Downloads/$choice2.zip
+mkdir -p $MODPATH/system/etc > /dev/null 2>&1
+curl -k -o "$FCDIR/Fonts/fonts.xml" https://john-fawkes.com/Downloads/xml/fonts.xml
+cp -f $FCDIR/Fonts/fonts.xml $MODPATH/system/etc
+set_perm $MODPATH/system/etc/fonts.xml 0 0 0644
+curl -k -o "$FCDIR/Fonts/$choice2.zip" https://john-fawkes.com/Downloads/$choice2.zip
 unzip -o "$FCDIR/Fonts/$choice2.zip" 'system/*' -d $MODPATH >&2 
 set_perm_recursive $MODPATH/system/fonts 0 0 0755 0644 > /dev/null 2>&1
 truncate -s 0 $CFONT
@@ -365,9 +365,8 @@ list_fonts() {
   touch $MODPATH/fontlist.txt > /dev/null 2>&1
   for font in $fonts; do
     sleep 0.1
-    i=$(echo $font)
     num=$((num+1))
-    echo -e "[$num] $i" >> $MODPATH/fontlist.txt && echo -e "${W}[$num]${N} ${G}$i${N}"
+    echo -e "[$num] $font" >> $MODPATH/fontlist.txt && echo -e "${W}[$num]${N} ${G}$font${N}"
   done
 }
 
@@ -406,7 +405,9 @@ default_menu() {
   case $choice in
       y|yes) echo "${B}Restore Default Selected...${N}"
         rm -rf $MODPATH/system/fonts
+        rm -f $MODPATH/system/etc/fonts.xml
         truncate -s 0 $CFONT
+        break
         ;;
       n|no) echo "${C}Keeping Modded Font...${N}"
         break
@@ -474,7 +475,7 @@ choice=""
     fi
     echo "${B}[-] Select an Option...${N}"
     echo " "
-    sleep 0.5
+    sleep 1
     echo -e "${W}[1]${N} ${G}- Choose From Over 200 Fonts${N}"
     echo " "
     echo -e "${W}[2]${N} ${G}- List Fonts in Folder (Custom)${N}"
