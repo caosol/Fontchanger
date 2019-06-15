@@ -32,9 +32,13 @@
 
 ## Credits
 - <a href="https://forum.xda-developers.com/android/themes/fonts-flashable-zips-t3219827">@giaton @xdadevelopers</a>
-- @oldmid @xdadevelopers
+- <a href="https://forum.xda-developers.com/member.php?u=8918441">@oldmid @xdadevelopers</a>
+- <a href="https://forum.xda-developers.com/member.php?u=4544860">@osm0sis</a>
 
 ## Changelog
+
+### v1.5 - 6.14.2019
+* Add osm0sis busybox to use ping durning install
 
 ### v1.4 - 6.14.2019
 * Add curl during install for users that dont have curl on their devices
