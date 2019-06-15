@@ -36,6 +36,9 @@
 - <a href="https://forum.xda-developers.com/member.php?u=4544860">@osm0sis</a>
 
 ## Changelog
+### v1.6 - 6.14.2019
+* Add new connection checker
+* fix shebang for whatever reason
 
 ### v1.5 - 6.14.2019
 * Add osm0sis busybox to use ping durning install
