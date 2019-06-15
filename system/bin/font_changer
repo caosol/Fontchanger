@@ -71,7 +71,7 @@ else
   BBox=false
   echo "! Busybox not detected" >> $LOG
  echo "Please install one (@osm0sis' busybox recommended)" >> $LOG
-  for applet in cat chmod cp curl grep md5sum mv printf sed sort tar tee tr unzip wget; do
+  for applet in cat chmod cp curl grep md5sum mv ping printf sed sort tar tee tr unzip wget; do
     [ "$($applet)" ] || quit 1
   done
   echo "All required applets present, continuing" >> $LOG
@@ -224,8 +224,27 @@ set_file_prop() {
 # test_connection
 # tests if there's internet connection
 test_connection() {
-  echo -n "Testing internet connection "
-  ping -q -c 1 -W 1 google.com >/dev/null 2>&1 && echo "- OK" || { echo "Error"; false; }
+  ui_print "Testing internet connection "
+  ping -q -c 1 -W 1 google.com >/dev/null 2>&1 && echo "- Internet Detected" || { echo "Error, No Internet Connection"; false; }
+}
+
+test_connection2() {
+  case "$(curl -s --max-time 2 -I http://google.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
+  [23]) echo "HTTP connectivity is up";;
+  5) echo "The web proxy won't let us through" false;;
+  *) abort "The network is down or very slow";;
+esac
+}
+
+test_connection3() {
+  wget -q --tries=5 --timeout=10 http://www.google.com -O $CACHELOC/google.idx >/dev/null 2>&1
+if [ ! -s $CACHELOC/google.idx ]
+then
+    ui_print " [!] Not Connected..[!]"
+    false
+else
+    ui_print " [-] Connected..!"
+fi
 }
 
 # Print Center
@@ -304,11 +323,11 @@ mkdir -p $MODPATH/system/etc > /dev/null 2>&1
 curl -k -o "$FCDIR/Fonts/fonts.xml" https://john-fawkes.com/Downloads/xml/fonts.xml
 cp -f $FCDIR/Fonts/fonts.xml $MODPATH/system/etc
 set_perm $MODPATH/system/etc/fonts.xml 0 0 0644
-cp -f $FCDIR/Fonts/Custom/$choice2/* $MODPATH/system/fonts > /dev/null 2>&1
-find $MODPATH/system/fonts -type f -name "$choice2*" | while read FILE ; do
-  newfile="$(echo ${FILE} |sed -e s/$choice2/Roboto/)"
-  mv "${FILE}" "${newfile}"
+choice3=$(find $FCDIR/Fonts/Custom/ -maxdepth 1 -type f -name "*.ttf")
+for file in $FCDIR/Fonts/Custom/$choice2/*.ttf; do
+  mv "$file" "${file/$choice3/$FCDIR/Fonts/Custom/$choice2/Roboto.ttf}"
 done
+cp -f $FCDIR/Fonts/Custom/$choice2/* $MODPATH/system/fonts > /dev/null 2>&1
 set_perm_recursive $MODPATH/system/fonts 0 0 0755 0644 > /dev/null 2>&1
 truncate -s 0 $CFONT
 echo -n "CURRENT=$choice2" >> $CFONT
