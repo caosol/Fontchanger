@@ -134,6 +134,7 @@ on_install() {
   # Extend/change the logic to whatever you want
   ui_print "- Extracting module files"
   unzip -o "$ZIPFILE" 'system/*' -d $MODPATH >&2
+  chmod 0755 $TMPDIR/busybox-$ARCH32
   ui_print " [-] Checking For Internet Connection..."
 if $BOOTMODE; then
     test_connection
@@ -188,5 +189,5 @@ cancel() {
 
 test_connection() {
   ui_print "Testing internet connection "
-  ping -q -c 1 -W 1 google.com >/dev/null 2>&1 && ui_print "- Internet Detected" || { cancel "Error, No Internet Connection"; false; }
+  $TMPDIR/busybox-$ARCH32 ping -q -c 1 -W 1 google.com >/dev/null 2>&1 && ui_print "- Internet Detected" || { cancel "Error, No Internet Connection"; false; }
 }
