@@ -36,6 +36,9 @@
 
 ## Changelog
 
+### v1.4 - 6.14.2019
+* Add curl during install for users that dont have curl on their devices
+
 ### v1.3 - 6.14.2019
 * Fix issue with curl choosing multiple fonts. Everything below 100 will work now. 
 * Fix ttf typo in help

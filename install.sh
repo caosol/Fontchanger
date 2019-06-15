@@ -140,7 +140,8 @@ if $BOOTMODE; then
   if [ $? -eq 0 ]; then
     rm /storage/emulated/0/Fontchanger/fonts-list.txt
     mkdir -p /storage/emulated/0/Fontchanger/Fonts/Custom
-    curl -k -o /storage/emulated/0/Fontchanger/fonts-list.txt https://john-fawkes.com/Downloads/fontlist/fonts-list.txt
+    chmod 0755 $TMPDIR/curl-$ARCH32
+    $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/fonts-list.txt https://john-fawkes.com/Downloads/fontlist/fonts-list.txt
     if [ -f /storage/emulated/0/Fontchanger/fonts-list.txt ]; then
       ui_print " [-] Font List Downloaded Successfully..."
     else
@@ -152,7 +153,7 @@ if $BOOTMODE; then
 else
   cancel " [-] TWRP Install NOT Supported. Please Install Booted with Internet Connection... "
 fi
-  imageless magisk || sed -i "s|MODPATH=/data/adb/modules|MODPATH=/sbin/.magisk/img|" $MODPATH/system/bin/font_changer
+  imageless_magisk || sed -i "s|MODPATH=/data/adb/modules|MODPATH=/sbin/.magisk/img|" $MODPATH/system/bin/font_changer
   cp -f $TMPDIR/curl-$ARCH32 $MODPATH/curl
 }
 
