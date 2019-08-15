@@ -473,9 +473,6 @@ apply_font_shortcut() {
 echo -e "${B}Applying Font. Please Wait...${N}"
 sleep 2
 choice2="$(grep -w $i $MODPATH/fontlist.txt | tr -d '[ ]' | tr -d '[0-9]' | tr -d ' ')"
-choice3=(
-$(find $FCDIR/Fonts/$choice2/system/fonts -maxdepth 1 -type f -name "*.ttf" -o -name "*.ttc" -prune | sed 's#.*/##'| sort -r)
-)
 if [ -f "$MODPATH/system/fonts/*Emoji*.ttf" ]; then
   for i in $MODPATH/system/fonts/*Emoji*.ttf; do
     mv -f $i $MODPATH
@@ -486,7 +483,6 @@ mkdir -p $FCDIR/Fonts/$choice2
 curl -k -o "$FCDIR/Fonts/$choice2.zip" https://john-fawkes.com/Downloads/$choice2.zip
 unzip -o "$FCDIR/Fonts/$choice2.zip" 'system/*' -d $FCDIR/Fonts/$choice2 >&2 
 mkdir -p $MODPATH/system/fonts
-
 if [ -f "$MODPATH/*Emoji*.ttf" ]; then
   for i in $MODPATH/*Emoji*.ttf; do
     mv -f $i $MODPATH/system/fonts
@@ -508,9 +504,6 @@ fi
 
 apply_custom_font_shortcut() {
 choice2="$(grep -w $i $MODPATH/customfontlist.txt | tr -d '[ ]' | tr -d '[0-9]' | tr -d ' ')"
-choice3=(
-$(find $FCDIR/Fonts/Custom/$choice2 -maxdepth 1 -type f -name "*.ttf" -o -name "*.ttc" -prune | sed 's#.*/##'| sort -r)
-)
 choice4=$(ls $MIRROR/system/fonts | wc -l)
 echo -e "${B}Applying Custom Font. Please Wait...${N}"
 sleep 2
@@ -521,7 +514,6 @@ if [ -f "$MODPATH/system/fonts/*Emoji*.ttf" ]; then
 fi
 rm -rf $MODPATH/system/fonts > /dev/null 2>&1
 mkdir -p $MODPATH/system/fonts > /dev/null 2>&1
-
 if [ -f "$MODPATH/*Emoji*.ttf" ]; then
   for i in $MODPATH/*Emoji*.ttf; do
     mv -f $i $MODPATH/system/fonts

@@ -43,6 +43,11 @@
 - <a href="t.me/botom8">@botom8 Telegram</a>
 
 ## Changelog
+##v1.9 - 8.14.2019
+* Cleanup some unneeded code
+* Fix the find errors
+* Fix a couple typos
+
 ### v1.8 - 7.12.2019 - 8.13.2019
 * Revamp entire install process. starting with v1.9 youll no longer have to reboot to updat because everything is symlinked to /sbin (thanks @vr25 for this idea and code)
 * Rework custom option (actually works now if you follow the video tutorial on <a href="https://john-fawkes.com/fontchanger.html">Fontchanger Custom Tutorial</a> or <a href="https://www.youtube.com/watch?v=YLUl5X-uVZc">Fontchanger Youtube link</a>)
