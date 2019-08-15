@@ -1,3 +1,4 @@
+#!/system/bin/sh
 ##########################################################################################
 #
 # Magisk Module Installer Script
@@ -28,7 +29,7 @@ SKIPMOUNT=false
 PROPFILE=false
 
 # Set to true if you need post-fs-data script
-POSTFSDATA=false
+POSTFSDATA=true
 
 # Set to true if you need late_start service script
 LATESTARTSERVICE=false
@@ -120,7 +121,6 @@ REPLACE="
 ##########################################################################################
 
 # Set what you want to display when installing your module
-
 print_modname() {
   ui_print "*******************************"
   ui_print "          Font Changer         "
@@ -133,29 +133,48 @@ on_install() {
   # The following is the default implementation: extract $ZIPFILE/system to $MODPATH
   # Extend/change the logic to whatever you want
   ui_print "- Extracting module files"
-  unzip -o "$ZIPFILE" 'system/*' -d $MODPATH >&2
+#  unzip -o "$ZIPFILE" 'system/*' -d $MODPATH >&2
+  unzip -o "$ZIPFILE" "$MODID/*" -d ${MODPATH%/*}/ >&2
   chmod 0755 $TMPDIR/busybox-$ARCH32
-  ui_print " [-] Checking For Internet Connection..."
+  ui_print " [-] Checking For Internet Connection... [-] "
 if $BOOTMODE; then
-    test_connection3
-  if [ $? -eq 0 ]; then
+  chmod 0755 $TMPDIR/curl-$ARCH32
+  chmod 0755 $TMPDIR/busybox-$ARCH32
+  test_connection3
+  [ $CON3 ] || test_connection2
+  [ $CON2 ] || test_connection
+  if [ $CON ] || [ $CON2 ] || [ $CON3 ]; then
+    imageless_magisk && MODULESPATH=$(ls /data/adb/modules/* && ls /data/adb/modules_update/*) || MODULESPATH=$(ls /sbin/.core/img/*)
+    if [ -f "$MODULESPATH/*/system/etc/*fonts*.xml" ] || [ -f "$MODULESPATH/*/system/fonts/*" ] && [ ! -f "$MODULESPATH/Fontchanger/system/fonts/*" ] || [ -f "$MODULESPATH/Fontchanger/system/etc/*font*.xml" ]; then
+			if [ ! -f "$MODULESPATH/*/disable" ]; then
+				NAME=$(get_var $MODULESPATH/*/module.prop "name=")
+				ui_print "[!]"
+				ui_print "[!] Module editing fonts detected!"
+				ui_print "[!] Module - '$NAME'[!]"
+				ui_print "[!]"
+        cancel
+      fi
+    fi
     rm /storage/emulated/0/Fontchanger/fonts-list.txt
+    rm /storage/emulated/o/Fontchanger/emojis-list.txt
     mkdir -p /storage/emulated/0/Fontchanger/Fonts/Custom
-    chmod 0755 $TMPDIR/curl-$ARCH32
+    mkdir -p /storage/emulated/0/Fontchanger/Emojis/Custom
     $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/fonts-list.txt https://john-fawkes.com/Downloads/fontlist/fonts-list.txt
-    if [ -f /storage/emulated/0/Fontchanger/fonts-list.txt ]; then
-      ui_print " [-] Font List Downloaded Successfully..."
+    $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/emojis-list.txt https://john-fawkes.com/Downloads/emojilist/emojis-list.txt
+    if [ -f /storage/emulated/0/Fontchanger/fonts-list.txt ] || [ -f /storage/emulated/0/Fontchanger/emojis-list.txt ]; then
+      ui_print " [-] All Lists Downloaded Successfully... [-] "
     else
-      ui_print " [!] Error Downloading Font List [!]..."
+      ui_print " [!] Error Downloading Lists... [!] "
     fi
   else
-    cancel " [!] No Internet Detected [!]..."
+    cancel " [!] No Internet Detected... [!] "
   fi
 else
-  cancel " [-] TWRP Install NOT Supported. Please Install Booted with Internet Connection... "
+  cancel " [-] TWRP Install NOT Supported. Please Install Booted with Internet Connection... [-] "
 fi
-  imageless_magisk || sed -i "s|MODPATH=/data/adb/modules|MODPATH=/sbin/.magisk/img|" $MODPATH/system/bin/font_changer
+  imageless_magisk || sed -i "s|MODPATH=/data/adb/modules/$MODID|MODPATH=/sbin/.magisk/img/$MODID|" $TMPDIR/font_changer.sh
   cp -f $TMPDIR/curl-$ARCH32 $MODPATH/curl
+  cp -f $TMPDIR/sleep-$ARCH32 $MODPATH/sleep
 }
 
 # Only some special files require specific permissions
@@ -166,12 +185,16 @@ fi
 set_permissions() {
   # The following is the default rule, DO NOT remove
   set_perm_recursive $MODPATH 0 0 0755 0644
-  set_perm $MODPATH/system/bin/font_changer 0 2000 0755
-  set_perm $MODPATH/curl 0 2000 0755
-  
+  set_perm $MODPATH/curl 0 0 0755
+  set_perm $MODPATH/sleep 0 0 0755
+
+  for file in $MODPATH/*.sh; do
+    [ -f $file ] && set_perm $file  0  0  0700
+  done
+
   ui_print " "
-  ui_print " [-] After Installing type font_changer in terminal [-]"
-  ui_print " [-] Then Choose Option 5 to Read the How-to on How to Set up your Fonts [-]"
+  ui_print " [-] After Installing type su then hit enter and type font_changer in terminal [-] "
+  ui_print " [-] Then Choose Option 5 to Read the How-to on How to Set up your Custom Fonts [-] "
   sleep 3
 
   # Here are some examples:
@@ -188,15 +211,21 @@ cancel() {
 }
 
 test_connection() {
-  ui_print "Testing internet connection "
-  $TMPDIR/busybox-$ARCH32 ping -q -c 1 -W 1 google.com >/dev/null 2>&1 && ui_print "- Internet Detected" || { cancel "Error, No Internet Connection"; false; }
+  ui_print " [-] Testing internet connection [-] "
+  $TMPDIR/busybox-$ARCH32 ping -q -c 1 -W 1 google.com >/dev/null 2>&1 && ui_print " [-] Internet Detected [-] "  && CON=true || { cancel " [-] Error, No Internet Connection [-] ";NCON=true; }
 }
 
 test_connection2() {
   case "$($TMPDIR/curl-$ARCH32 -s --max-time 2 -I http://google.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
-  [23]) echo "HTTP connectivity is up";;
-  5) echo "The web proxy won't let us through" false;;
-  *) cancel "The network is down or very slow";;
+  [23]) ui_print " [-] HTTP connectivity is up [-] "
+    CON2=true
+    ;;
+  5) ui_print " [!] The web proxy won't let us through [!] "
+    NCON2=true
+    ;;
+  *) ui_print " [!] The network is down or very slow [!] "
+    NCON2=true
+    ;;
 esac
 }
 
@@ -204,9 +233,50 @@ test_connection3() {
   $TMPDIR/busybox-$ARCH32 wget -q --tries=5 --timeout=10 http://www.google.com -O $TMPDIR/google.idx >/dev/null 2>&1
 if [ ! -s $TMPDIR/google.idx ]
 then
-    ui_print " [!] Not Connected..[!]"
-    false
+    ui_print " [!] Not Connected... [!] "
+    NCON3=true
 else
-    ui_print " [-] Connected..!"
+    ui_print " [-] Connected..! [-] "
+    CON3=true
 fi
+rm -f $TMPDIR/google.idx
+}
+
+get_ver() { sed -n 's/^name=//p' ${1}; }
+
+set_vars() {
+if [ -d /cache ]; then CACHELOC=/cache; else CACHELOC=/data/cache; fi
+  MODTITLE=$(grep_prop name $TMPDIR/module.prop)
+  VER=$(grep_prop version $TMPDIR/module.prop)
+	AUTHOR=$(grep_prop author $TMPDIR/module.prop)
+	INSTLOG=$CACHELOC/dns_switch_install.log
+  MAGISK_VER="$(grep MAGISK_VER_CODE /data/adb/magisk/util_functions.sh)"
+}
+
+log_handler() {
+  echo "" >> $INSTLOG 2>&1
+  echo -e "$(date +"%m-%d-%Y %H:%M:%S") - $1" >> $INSTLOG 2>&1
+}
+
+log_start() {
+	if [ -f "$INSTLOG" ]; then
+    truncate -s 0 $INSTLOG
+  else
+    touch $INSTLOG
+  fi
+  echo " " >> $INSTLOG 2>&1
+  echo "    *******************************************" >> $INSTLOG 2>&1
+  echo "    *                $MODTITLE             *" >> $INSTLOG 2>&1
+  echo "    *******************************************" >> $INSTLOG 2>&1
+  echo "    *                  v$VER                   *" >> $INSTLOG 2>&1
+  echo "    *******************************************" >> $INSTLOG 2>&1
+  echo "    *              By : $AUTHOR            *" >> $INSTLOG 2>&1
+  echo "    *******************************************" >> $INSTLOG 2>&1
+  echo " " >> $INSTLOG 2>&1
+  log_handler "Starting module installation script"
+}
+
+log_print() {
+  ui_print "$1"
+  log_handler "$1"
 }

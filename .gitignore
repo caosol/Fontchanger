@@ -1,0 +1,4 @@
+_builds/*
+.DS_Store
+build.sh
+check_syntax.sh
