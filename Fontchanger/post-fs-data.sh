@@ -37,8 +37,8 @@ mkdir -p /sbin/.$MODID
 [ ${MAGISK_VER_CODE} -gt 18100 ] \
   && ln -s $MODPATH /sbin/.$MODID/$MODID \
   || cp -a $MODPATH /sbin/.$MODID/$MODID
-ln -fs /sbin/.$MODID/$MODID/font_changer.sh /sbin/font_changer
-ln -fs /sbin/.$MODID/$MODID/${MODID}-functions.sh /sbin/${MODID}-functions
+ln -f /sbin/.$MODID/$MODID/font_changer.sh /sbin/font_changer
+ln -f /sbin/.$MODID/$MODID/${MODID}-functions.sh /sbin/${MODID}-functions
 
 # fix termux's PATH
 termuxSu=/data/data/com.termux/files/usr/bin/su

@@ -48,8 +48,6 @@ else
   echo "! Can't find functions script! Aborting!"; exit 1
 fi
 
-log_start
-
 #=========================== Set Log Files
 #mount -o remount,rw $CACHELOC 2>/dev/null
 #mount -o rw,remount $CACHELOC 2>/dev/null
@@ -59,6 +57,8 @@ oldLOG=$MODPATH/${MODID}-old.log
 # > Verbose output goes here
 VERLOG=$MODPATH/${MODID}-verbose.log
 oldVERLOG=$MODPATH/${MODID}-verbose-old.log
+
+log_start
 
 # Start Logging verbosely
 mv -f $VERLOG $oldVERLOG 2>/dev/null
@@ -421,13 +421,17 @@ echo -e "${W}[1]${N} ${G} - Choose From Over 200 Fonts${N}"
 echo " "
 echo -e "${W}[2]${N} ${G} - List Fonts in Folder (Custom)${N}"
 echo " "
-echo -e "${W}[3]${N} ${G} - Change to Stock Font${N}"
+echo -e "${W}[3]${N} ${G} - Change to Stock Font or Emoji${N}"
 echo " "
 echo -e "${W}[4]${N} ${G} - Change Emojis${N}"
 echo " "
 echo -e "${W}[5]${N} ${G} - How to Set Up the Font Folder${N}"
 echo " "
-#echo -e "${W}[6]${N} ${G} - Take Logs${N}"
+echo -e "${W}[6]${N} ${G} - Help (Options)${N}"
+echo " "
+echo -e "${W}[7]${N} ${G} - Update lists for Emojis and Fonts${N}"
+echo " "
+#echo -e "${W}[8]${N} ${G} - Take Logs${N}"
 #echo " "
 echo -e "${R}[Q] - Quit${N}"
 echo " "
@@ -441,16 +445,22 @@ read -r choice
     2) echo "${G}[-] Custom Font Menu Selected...${N}"
       custom_menu
       ;;
-    3) echo "${B}[-] Stock Font Menu Selected...${N}"
+    3) echo "${B}[-] Stock Font/Emoji Menu Selected...${N}"
       default_menu
       ;;
     4) echo "${R}[-] Emoji Menu Selected...${N}"
       emoji_menu
       ;;
-    5) echo "${C}[-] Help Selected...${N}"
+    5) echo "${C}[-] Custom Setup Help Selected...${N}"
+      help_custom
+      ;;
+    6) echo "${B}[-] Option Help Selected...${N}"
       help
       ;;
-#    6) log_print " Collecting logs and creating archive "
+    7) echo "${Y}[-] Update Lists of Emojis/Fonts Selected..."
+      update_lists
+      ;;
+#    8) log_print " Collecting logs and creating archive "
 #      magisk_version
 #      collect_logs
 #      upload_logs
@@ -480,7 +490,7 @@ if [ -f "$MODPATH/system/fonts/*Emoji*.ttf" ]; then
 fi
 rm -rf $MODPATH/system/fonts > /dev/null 2>&1
 mkdir -p $FCDIR/Fonts/$choice2
-curl -k -o "$FCDIR/Fonts/$choice2.zip" https://john-fawkes.com/Downloads/$choice2.zip
+[ -e $FCDIR/Fonts/$choice2.zip ] || curl -k -o "$FCDIR/Fonts/$choice2.zip" https://john-fawkes.com/Downloads/$choice2.zip
 unzip -o "$FCDIR/Fonts/$choice2.zip" 'system/*' -d $FCDIR/Fonts/$choice2 >&2 
 mkdir -p $MODPATH/system/fonts
 if [ -f "$MODPATH/*Emoji*.ttf" ]; then
@@ -504,26 +514,42 @@ fi
 
 apply_custom_font_shortcut() {
 choice2="$(grep -w $i $MODPATH/customfontlist.txt | tr -d '[ ]' | tr -d '[0-9]' | tr -d ' ')"
-choice4=$(ls $MIRROR/system/fonts | wc -l)
-echo -e "${B}Applying Custom Font. Please Wait...${N}"
-sleep 2
-if [ -f "$MODPATH/system/fonts/*Emoji*.ttf" ]; then
+cusfont=$(cat $MODPATH/listforcustom.txt)
+if [ -e $FCDIR/dump.txt ]; then
+  truncate -s 0 $FCDIR/dump.txt
+else
+  touch $FCDIR/dump.txt
+fi
+for i in ${cusfont[@]} ; do
+  if [ -e $FCDIR/Fonts/Custom/$choice2/$i ]; then
+    echo "$i found" >> $FCDIR/dump.txt && echo "${B}$i Found${N}"
+  fi
+  if [ ! -e $FCDIR/Fonts/Custom/$choice2/$i ]; then
+    echo "$i NOT FOUND" >> $FCDIR/dump.txt && echo "${R}$i NOT FOUND${N}"
+  fi
+done
+if grep -wq "$i NOT FOUND" $FCDIR/dump.txt; then
+  abort "${R}Script Will Not Continue Until All ttf Files Exist!${N}"
+fi
+PASSED=true
   for i in $MODPATH/system/fonts/*Emoji*.ttf; do
-    mv -f $i $MODPATH
+    if [ -e $i ]; then
+      mv -f $i $MODPATH
+    fi
   done
-fi
-rm -rf $MODPATH/system/fonts > /dev/null 2>&1
-mkdir -p $MODPATH/system/fonts > /dev/null 2>&1
-if [ -f "$MODPATH/*Emoji*.ttf" ]; then
+rm -rf $MODPATH/system/fonts >/dev/null 2>&1
+mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
   for i in $MODPATH/*Emoji*.ttf; do
-    mv -f $i $MODPATH/system/fonts
+    if [ -e $i ]; then
+      mv -f $i $MODPATH/system/fonts
+    fi
   done
-fi
-cp -f $FCDIR/Fonts/Custom/$choice2/* $MODPATH/system/fonts > /dev/null 2>&1
-set_perm_recursive $MODPATH/system/fonts 0 0 0755 0644 > /dev/null 2>&1
+cp -f $FCDIR/Fonts/Custom/$choice2/* $MODPATH/system/fonts/
+set_perm_recursive $MODPATH/system/fonts 0 0 0755 0644 >/dev/null 2>&1
+[ -f $CFONT ] || touch $CFONT
 truncate -s 0 $CFONT
 echo -n "CURRENT=$choice2" >> $CFONT
-if [ -d "$FCDIR/Fonts/Custom/$choice2.zip" ] && [ -d $MODPATH/system/fonts ]; then
+if [ $PASSED == true ] && [ -d $MODPATH/system/fonts ]; then
   font_reboot_menu
 else
   echo -e "${R}[!] FONT WAS NOT APPLIED [!]${N}"
@@ -573,6 +599,8 @@ case "$1" in
     fi
 	    echo "$div"
 	  exit;;
+  -u|--update) shift
+    update_lists;;
 esac
 
 menu

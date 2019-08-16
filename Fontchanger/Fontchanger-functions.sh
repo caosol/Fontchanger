@@ -184,7 +184,7 @@ Options:
   -a|--font [font name]         apply the font
     e.g., font_changer -a Font_UbuntuLight
     e.g., font_changer --font Font_UbuntuLight
-  
+
   -d|--cfont [custom font]      apply the custom font
   e.g., font_changer -d <name of custom font>
   e.g., font_changer --cfont <name of custom font>
@@ -200,40 +200,84 @@ Options:
   -m|--list                     list fonts <basically skips main menu>
   e.g., font_changer -m
   e.g., font_changer --list
-  
+
   -s|--current                  show current font
   e.g., font_changer -s
   e.g., font_changer --current
-  
-  
 
-  echo "${G}Welcome to the How-to for FontChanger!${N}"
-  echo "${G}This is the Folder Structure You Will Need to Follow${N}"
-  echo "${G}In Order for FontChanger to Properly Detect and Apply Your Font!${N}"
-  echo "${G}Note ------ /sdcard Equals Internal Storage  ${N}"
-  echo " "
-  echo " "
-  echo " "
-  echo "     |--Fontchanger/"
-  echo "          |--Fonts/"
-  echo "              |--Custom/"
-  echo -e "              ${R}|--<font-folder-name>/${N}"
-  echo -e "                       ${G}|--<font>.ttf${N}"
-  echo -e "                       ${G}|--<font>.ttf${N}"
-  echo " "
-  echo " You Need To Place Your Font Folders in /storage/emulated/0/Fontchanger/Fonts/Custom."
-  echo " The Folder in ${R}RED${N} is the Name of the Font You Want to Apply."
-  echo " This Would be the Main Folder That Holds the ttf Files for That Font."
-  echo " The Files in ${G}GREEN${N} are the ttf Files For That Specific Font."
-  echo " You Can Have Multiple Font Folders Inside the Fontchanger/Fonts Folder."
-  echo " Inside the Folder that Has Your ttf Files Inside, You Need to Have 23 Font Files."
-  echo " The Script Will Not Pass Unless All 23 Files Exist! The Files You Need Are :"
-  echo " GoogleSans-Bold.ttf GoogleSans-BoldItalic.ttf GoogleSans-Medium.ttf GoogleSans-MediumItalic.ttf GoogleSans-Regular.ttf Roboto-Black.ttf Roboto-BlackItalic.ttf Roboto-Bold.ttf Roboto-BoldItalic.ttf RobotoCondensed-Bold.ttf RobotoCondensed-BoldItalic.ttf RobotoCondensed-Italic.ttf RobotoCondensed-Light.ttf RobotoCondensed-LightItalic.ttf RobotoCondensed-Regular.ttf Roboto-Italic.ttf Roboto-Light.ttf Roboto-LightItalic.ttf Roboto-Medium.ttf Roboto-MediumItalic.ttf Roboto-Regular.ttf Roboto-Thin.ttf Roboto-ThinItalic.ttf"
-  echo " You Can Find a Video Tutorial on How to make these Font Files on my website https://john-fawkes.com/fontchanger.HTML or if you can't access it for whatever reason you can go to https://www.youtube.com/watch?v=YLUl5X-uVZc and watch it there"
+  -u|--upgrade                  upgrade font and emoji lists
+  e.g., font_changer -u
+  e.g., font_changer --upgrade
 EOF
-  return_menu
+exit
 }
 
+help_custom() {
+  cat <<EOF
+$MODTITLE $VER($REL)
+by $AUTHOR
+Copyright (C) 2019, John Fawkes @ xda-developers
+License: GPLv3+
+  Welcome to the How-to for FontChanger!${N}
+  This is the Folder Structure You Will Need to Follow${N}
+  In Order for FontChanger to Properly Detect and Apply Your Font!${N}
+  Note ------ /sdcard Equals Internal Storage  ${N}
+
+
+    |--Fontchanger/
+            |--Fonts/
+               |--Custom/
+                  |--<font-folder-name>/
+                         |--<font>.ttf
+                         |--<font>.ttf
+  
+  You Need To Place Your Font Folders in /storage/emulated/0/Fontchanger/Fonts/Custom.
+  The <font-folder-name> is the Name of the Font You Want to Apply.
+  This Would be the Main Folder That Holds the ttf Files for That Font.
+  The --<font>.ttf are the ttf Files For That Specific Font.
+  You Can Have Multiple Font Folders Inside the Fontchanger/Fonts Folder.
+  Inside the Folder that Has Your ttf Files Inside, You Need to Have 23 Font Files.
+  The Script Will Not Pass Unless All 23 Files Exist! The Files You Need Are :
+  GoogleSans-Bold.ttf 
+  GoogleSans-BoldItalic.ttf 
+  GoogleSans-Medium.ttf 
+  GoogleSans-MediumItalic.ttf 
+  GoogleSans-Regular.ttf 
+  Roboto-Black.ttf 
+  Roboto-BlackItalic.ttf 
+  Roboto-Bold.ttf 
+  Roboto-BoldItalic.ttf 
+  RobotoCondensed-Bold.ttf 
+  RobotoCondensed-BoldItalic.ttf 
+  RobotoCondensed-Italic.ttf 
+  RobotoCondensed-Light.ttf 
+  RobotoCondensed-LightItalic.ttf 
+  RobotoCondensed-Regular.ttf 
+  Roboto-Italic.ttf 
+  Roboto-Light.ttf 
+  Roboto-LightItalic.ttf 
+  Roboto-Medium.ttf 
+  Roboto-MediumItalic.ttf 
+  Roboto-Regular.ttf 
+  Roboto-Thin.ttf 
+  Roboto-ThinItalic.ttf
+  You Can Find a Video Tutorial on How to make these Font Files on my website https://john-fawkes.com/fontchanger.HTML or if you can't access it for whatever reason you can go to https://www.youtube.com/watch?v=YLUl5X-uVZc and watch it there
+
+
+  For the custom emojis you'll need to setup a directory in /storage/emulated/0/Fontchanger/Emojis/Custom
+  
+      |--Fontchanger/
+            |--Emoji/
+               |--Custom/
+                |--<Emoji-folder-name>/
+                        |--<font>.ttf
+                        |--<font>.ttf
+ 
+  The <emoji-folder-name> is the folder that will house your custom emoji file.
+  The <font>.ttf are the emoji files. Usually named NotoColorEmoji.ttf.
+EOF
+exit
+}
 #######################################################################################################
 #                                         EMOJIS                                                      #
 #######################################################################################################
@@ -241,23 +285,26 @@ apply_emoji() {
   echo -e "${B}Applying Emoji. Please Wait...${N}"
   sleep 2
   choice2="$(grep -w $choice $MODPATH/emojilist.txt | tr -d '[ ]' | tr -d $choice | tr -d ' ')"
-  rm -f $MODPATH/system/fonts/*Emoji >/dev/null 2>&1  
+  rm -f $MODPATH/system/fonts/*Emoji*.ttf >/dev/null 2>&1  
   if [ ! -d $MODPATH/system/fonts ]; then
     mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
   fi
- [ -f $FCDIR/Fonts/$choice2.zip ] || curl -k -o "$FCDIR/Fonts/$choice2.zip" https://john-fawkes.com/Downloads/emoji/$choice2.zip
-  unzip -o "$FCDIR/Fonts/$choice2.zip" 'system/*' -d $MODPATH >&2
+ [ -e $FCDIR/Emojis/$choice2.zip ] || curl -k -o "$FCDIR/Emojis/$choice2.zip" https://john-fawkes.com/Downloads/emoji/$choice2.zip
+  mkdir -p $FCDIR/Emojis/$choice2 >/dev/null 2>&1
+  unzip -o "$FCDIR/Emojis/$choice2.zip" 'system/*' -d $FCDIR/Emojis/$choice2 >&2
+  mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
+  cp -rf $FCDIR/Emojis/$choice2/* $MODPATH
   if [ -f $MIRROR/system/fonts/SamsungColorEmoji.ttf ]; then
-    cp -f $MODPATH/system/fonts/$choice2.ttf $MODPATH/system/fonts/SamsungColorEmoji.ttf
+    cp -f $MODPATH/system/fonts/*Emoji*.ttf $MODPATH/system/fonts/SamsungColorEmoji.ttf
   fi
   if [ -f $MIRROR/system/fonts/hTC_ColorEmoji.ttf ]; then
-    cp -f $MODPATH/system/fonts/$choice2.ttf $MODPATH/system/fonts/hTC_ColorEmoji.ttf
+    cp -f $MODPATH/system/fonts/*Emoji*.ttf $MODPATH/system/fonts/hTC_ColorEmoji.ttf
   fi
   set_perm_recursive $MODPATH/system/fonts 0 0 0755 0644 >/dev/null 2>&1
   [ -f $CEMOJI ] || touch $CEMOJI
   truncate -s 0 $CEMOJI
-  echo -n "CURRENT=$choice2" >>$CEMOJI
-  if [ -f "$FCDIR/Fonts/$choice2.zip" ] && [ -d $MODPATH/system/fonts ]; then
+  echo -n "CURRENT=$choice2" >> $CEMOJI
+  if [ -d $MODPATH/system/fonts ] && [ -e $MODPATH/system/fonts/*Emoji*.ttf ]; then
     font_reboot_menu
   else
     echo -e "${R}[!] Emoji WAS NOT APPLIED [!]${N}"
@@ -313,9 +360,76 @@ emoji_menu() {
   esac
 }
 #######################################################################################################
+#                                         CUSTOM EMOJIS                                              #
+#######################################################################################################
+apply_custom_emoji() {
+  echo -e "${B}Applying Emoji. Please Wait...${N}"
+  sleep 2
+  choice2="$(grep -w $choice $MODPATH/customemojilist.txt | tr -d '[ ]' | tr -d $choice | tr -d ' ')"
+  rm -f $MODPATH/system/fonts/*Emoji*.ttf >/dev/null 2>&1
+  if [ ! -d $MODPATH/system/fonts ]; then
+    mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
+  fi
+  cp -f $FCDIR/Emojis/Custom/$choice2/* $MODPATH/system/fonts
+  if [ -f $MIRROR/system/fonts/SamsungColorEmoji.ttf ]; then
+    cp -f $MODPATH/system/fonts/*Emoji*.ttf $MODPATH/system/fonts/SamsungColorEmoji.ttf
+  fi
+  if [ -f $MIRROR/system/fonts/hTC_ColorEmoji.ttf ]; then
+    cp -f $MODPATH/system/fonts/*Emoji*.ttf $MODPATH/system/fonts/hTC_ColorEmoji.ttf
+  fi
+  set_perm_recursive $MODPATH/system/fonts 0 0 0755 0644 >/dev/null 2>&1
+  [ -f $CEMOJI ] || touch $CEMOJI
+  truncate -s 0 $CEMOJI
+  echo -n "CURRENT=$choice2" >> $CEMOJI
+  if [ -d $MODPATH/system/fonts ] && [ -f $MODPATH/system/fonts/*Emoji*.ttf ]; then
+    font_reboot_menu
+  else
+    echo -e "${R}[!] Emoji WAS NOT APPLIED [!]${N}"
+    echo -e "${R} PLEASE TRY AGAIN${N}"
+    sleep 3
+    clear
+    emoji_menu
+  fi
+}
+
+list_custom_emoji() {
+  num=1
+  rm $MODPATH/customemojilist.txt >/dev/null 2>&1
+  touch $MODPATH/customemojilist.txt >/dev/null 2>&1
+  for i in $(ls "$FCDIR/Emojis/Custom" | sort); do
+    sleep 0.1
+    echo -e "[$num] $i" >> $MODPATH/customemojilist.txt && echo "${W}[$num]${N} ${B}$i${N}"
+    num=$((num + 1))
+  done
+}
+
+
+custom_emoji_menu() {
+  list_custom_emoji
+  wrong=$(cat $MODPATH/customemojilist.txt | wc -l)
+  echo -e "${G}Please Choose an Emoji to Apply. Enter the Corresponding Number...${N}"
+  read -r choice
+  case $choice in
+  $choice)
+    if [ $choice == "q" ]; then
+      echo "${R}Quiting...${N}"
+      clear
+      quit
+    elif [ $choice -gt $wrong ]; then
+      echo "${Y}[!] Item Not Available! Try Again... [!]${N}"
+      sleep 1.5
+      clear
+    else
+      apply_custom_emoji
+    fi
+    ;;
+  esac
+}
+#######################################################################################################
 #                                         CUSTOM FONTS                                                #
 #######################################################################################################
 apply_custom_font() {
+echo "${B}Applying Custom Font...${N}"
 choice2="$(grep -w $choice $MODPATH/customfontlist.txt | tr -d '[ ]' | tr -d $choice | tr -d ' ')"
 cusfont=$(cat $MODPATH/listforcustom.txt)
 if [ -e $FCDIR/dump.txt ]; then
@@ -335,18 +449,18 @@ if grep -wq "$i NOT FOUND" $FCDIR/dump.txt; then
   abort "${R}Script Will Not Continue Until All ttf Files Exist!${N}"
 fi
 PASSED=true
-if [ -f $MODPATH/system/fonts/*Emoji*.ttf ]; then
   for i in $MODPATH/system/fonts/*Emoji*.ttf; do
-    mv -f $i $MODPATH
+    if [ -e $i ]; then
+      mv -f $i $MODPATH
+    fi
   done
-fi
 rm -rf $MODPATH/system/fonts >/dev/null 2>&1
 mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
-if [ -f "$MODPATH/*Emoji*.ttf" ]; then
   for i in $MODPATH/*Emoji*.ttf; do
-    mv -f $i $MODPATH/system/fonts
+    if [ -e $i ]; then
+      mv -f $i $MODPATH/system/fonts
+    fi
   done
-fi
 cp -f $FCDIR/Fonts/Custom/$choice2/* $MODPATH/system/fonts/
 set_perm_recursive $MODPATH/system/fonts 0 0 0755 0644 >/dev/null 2>&1
 [ -f $CFONT ] || touch $CFONT
@@ -405,11 +519,10 @@ if [ -f "$MODPATH/system/fonts/*Emoji*.ttf" ]; then
 fi
 rm -rf $MODPATH/system/fonts >/dev/null 2>&1
 mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
-[ -f $FCDIR/Fonts/$choice2.zip ] || curl -k -o "$FCDIR/Fonts/$choice2.zip" https://john-fawkes.com/Downloads/$choice2.zip
-mkdir -p $FCDIR/Fonts/$choice2
+[ -e $FCDIR/Fonts/$choice2.zip ] || curl -k -o "$FCDIR/Fonts/$choice2.zip" https://john-fawkes.com/Downloads/$choice2.zip
+mkdir -p $FCDIR/Fonts/$choice2 >/dev/null 2>&1
 unzip -o "$FCDIR/Fonts/$choice2.zip" 'system/*' -d $FCDIR/Fonts/$choice2 >&2
-mkdir -p $MODPATH/system/fonts
-mkdir -p $MODPATH/system/etc
+mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
 cp -rf $FCDIR/Fonts/$choice2/system/fonts $MODPATH/system
 if [ -f "$MODPATH/*Emoji*.ttf" ]; then
   for i in $MODPATH/*Emoji*.ttf; do
@@ -479,15 +592,16 @@ default_menu() {
   case $choice in
   y | yes)
     echo -e "${B}Restore Default Selected...${N}"
-    if [ -f "$MODPATH/system/fonts/*Emoji*.ttf" ]; then
+    if [ -e "$MODPATH/system/fonts/*Emoji*.ttf" ]; then
       echo -e "${B}Would You like to Keep Your Emojis?${N}"
       echo -e "${B}Please Enter (y)es or (n)o...${N}"
       read -r emojichoice
       case $emojichoice in
       y | yes)
         echo -e "${Y}Backing up Emojis${N}"
+        mkdir -p $FCDIR/Emojis/Backups >/dev/null 2>&1
         for i in $MODPATH/*Emoji*.ttf; do
-          mv -f $i $MODPATH/system/fonts
+          mv -f $i $FCDIR/Emojis/Backups >/dev/null 2>&1
         done
         break
         ;;
@@ -497,8 +611,14 @@ default_menu() {
         ;;
       esac
     fi
-    rm -rf $MODPATH/system/fonts
-    rm -f $MODPATH/system/etc/fonts.xml
+    rm -rf $MODPATH/system/fonts >/dev/null 2>&1
+    for i in $FCDIR/Emojis/Backup/*Emoji*.ttf; do
+      if [ -e $i ]; then
+        mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
+        mv $i $MODPATH/system/fonts >/dev/null 2>&1
+      fi
+    done
+    rm $FCDIR/Emojis/Backup  >/dev/null 2>&1
     truncate -s 0 $CFONT
     break
     ;;
@@ -512,5 +632,54 @@ default_menu() {
     clear
     ;;
   esac
+  return_menu
+}
+
+#######################################################################################################
+#                                        Update Emoji/Font Lists                                      #
+#######################################################################################################
+
+update_lists() {
+  currVer=$(wget https://john-fawkes.com/Downloads/fontlist/fonts-list.txt --output-document - | wc -l)
+  currVer2=$(wget https://john-fawkes.com/Downloads/emojilist/emojis-list.txt --output-document - | wc -l)
+  instVer=$(cat $FCDIR/fonts-list.txt | wc -l)
+  instVer2=$(cat $FCDIR/emojis-list.txt | wc -l)
+  echo -e "${B}Checking For Updates...${N}"
+if [ $currVer -gt $instVer ]; then
+  ui_print " [-] Checking For Internet Connection... [-] "
+  test_connection3
+  [ $CON3 ] || test_connection2
+  [ $CON2 ] || test_connection
+  if [ $CON ] || [ $CON2 ] || [ $CON3 ]; then
+    rm $FCDIR/fonts-list.txt >/dev/null 2>&1
+    mkdir -p $FCDIR/Fonts/Custom >/dev/null 2>&1
+    curl -k -o $FCDIR/fonts-list.txt https://john-fawkes.com/Downloads/fontlist/fonts-list.txt
+    if [ $instVer == $currVer ]; then
+      ui_print " [-] Fonts Lists Downloaded Successfully... [-] "
+    else
+      ui_print " [!] Error Downloading Fonts Lists... [!] "
+    fi
+  else
+    abort " [!] No Internet Detected... [!] "
+  fi
+  if [ $currVer2 -gt $instVer2 ]; then
+    ui_print " [-] Checking For Internet Connection... [-] "
+    test_connection3
+    [ $CON3 ] || test_connection2
+    [ $CON2 ] || test_connection
+    if [ $CON ] || [ $CON2 ] || [ $CON3 ]; then
+      rm $FCDIR/emojis-list.txt >/dev/null 2>&1
+      mkdir -p $FCDIR/Emojis/Custom >/dev/null 2>&1
+      curl -k -o $FCDIR/emojis-list.txt https://john-fawkes.com/Downloads/emojilist/emojis-list.txt
+      if [ $instVer2 == $currVer2 ]; then
+        ui_print " [-] Fonts Lists Downloaded Successfully... [-] "
+      else
+        ui_print " [!] Error Downloading Fonts Lists... [!] "
+      fi
+    else
+      abort " [!] No Internet Detected... [!] "
+    fi
+  fi
+fi
   return_menu
 }

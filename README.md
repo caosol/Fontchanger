@@ -43,6 +43,19 @@
 - <a href="t.me/botom8">@botom8 Telegram</a>
 
 ## Changelog
+##v2.0 - 8.16.2019
+* Add update font/emoji lists. Use -u or --upgrade to use or choose the option in main menu. The lists are used to show you which fonts/emojis are available.
+* Cleanup help. Split help between custom help and option help.
+* Now if the zip already exists in Fontchanger folder it wont redownload.(if short zip errors youll need to delete the zip from the Fontchanger/Emojis or Fontchanger/Fonts folder and then choose that font/emoji again)
+* Add custom emoji option. The directory setup is the same as custom font except you only need one file named NotoColorEmoji.ttf
+* Fix change back to stock font
+* Add a way to go back to stock emoji
+* If going back to stock font and you have an emoji as well you can keep the emoji.
+* Fix logging code. no more cant start errors when running font_changer
+* Fix -c shortcut flag
+* Hardlink /sbin instead of softlinking (now any changes to files in /sbin/.Fontchanger or /data/adb/modules/Fontchanger will be applied to the link
+* code cleanup/typo fixes
+
 ##v1.9 - 8.14.2019
 * Cleanup some unneeded code
 * Fix the find errors
