@@ -2,10 +2,10 @@
 
 <div align="center">
   <!-- Version -->
-    <img src="https://img.shields.io/badge/Version-v1.8-blue.svg?longCache=true&style=popout-square"
+    <img src="https://img.shields.io/badge/Version-v2.0-blue.svg?longCache=true&style=popout-square"
       alt="Version" />
   <!-- Last Updated -->
-    <img src="https://img.shields.io/badge/Updated-August 13, 2019-green.svg?longCache=true&style=flat-square"
+    <img src="https://img.shields.io/badge/Updated-August 16, 2019-green.svg?longCache=true&style=flat-square"
       alt="_time_stamp_" />
 </div>
 
