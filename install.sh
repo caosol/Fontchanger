@@ -141,9 +141,13 @@ if $BOOTMODE; then
   chmod 0755 $TMPDIR/curl-$ARCH32
   chmod 0755 $TMPDIR/busybox-$ARCH32
   test_connection3
-  [ $CON3 ] || test_connection2
-  [ $CON2 ] || test_connection
-  if [ $CON ] || [ $CON2 ] || [ $CON3 ]; then
+  if ! "$CON3"; then
+    test_connection2
+    if ! "$CON2"; then
+      test_connection
+    fi
+  fi
+  if "$CON1" || "$CON2"  ||  "$CON3"; then
     imageless_magisk && MODULESPATH=$(ls /data/adb/modules/* && ls /data/adb/modules_update/*) || MODULESPATH=$(ls /sbin/.core/img/*)
     if [ -f "$MODULESPATH/*/system/etc/*fonts*.xml" ] || [ -f "$MODULESPATH/*/system/fonts/*" ] && [ ! -f "$MODULESPATH/Fontchanger/system/fonts/*" ] || [ -f "$MODULESPATH/Fontchanger/system/etc/*font*.xml" ]; then
 			if [ ! -f "$MODULESPATH/*/disable" ]; then
@@ -161,7 +165,7 @@ if $BOOTMODE; then
     mkdir -p /storage/emulated/0/Fontchanger/Emojis/Custom
     $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/fonts-list.txt https://john-fawkes.com/Downloads/fontlist/fonts-list.txt
     $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/emojis-list.txt https://john-fawkes.com/Downloads/emojilist/emojis-list.txt
-    if [ -f /storage/emulated/0/Fontchanger/fonts-list.txt ] || [ -f /storage/emulated/0/Fontchanger/emojis-list.txt ]; then
+    if [ -f /storage/emulated/0/Fontchanger/fonts-list.txt ] && [ -f /storage/emulated/0/Fontchanger/emojis-list.txt ]; then
       ui_print " [-] All Lists Downloaded Successfully... [-] "
     else
       ui_print " [!] Error Downloading Lists... [!] "
@@ -212,7 +216,7 @@ cancel() {
 
 test_connection() {
   ui_print " [-] Testing internet connection [-] "
-  $TMPDIR/busybox-$ARCH32 ping -q -c 1 -W 1 google.com >/dev/null 2>&1 && ui_print " [-] Internet Detected [-] "  && CON=true || { cancel " [-] Error, No Internet Connection [-] ";NCON=true; }
+  $TMPDIR/busybox-$ARCH32 ping -q -c 1 -W 1 google.com >/dev/null 2>&1 && ui_print " [-] Internet Detected [-] "; CON1=true || { cancel " [-] Error, No Internet Connection [-] "; NCON=true; }
 }
 
 test_connection2() {
@@ -231,8 +235,7 @@ esac
 
 test_connection3() {
   $TMPDIR/busybox-$ARCH32 wget -q --tries=5 --timeout=10 http://www.google.com -O $TMPDIR/google.idx >/dev/null 2>&1
-if [ ! -s $TMPDIR/google.idx ]
-then
+if [ ! -s $TMPDIR/google.idx ]; then
     ui_print " [!] Not Connected... [!] "
     NCON3=true
 else
@@ -249,7 +252,7 @@ if [ -d /cache ]; then CACHELOC=/cache; else CACHELOC=/data/cache; fi
   MODTITLE=$(grep_prop name $TMPDIR/module.prop)
   VER=$(grep_prop version $TMPDIR/module.prop)
 	AUTHOR=$(grep_prop author $TMPDIR/module.prop)
-	INSTLOG=$CACHELOC/dns_switch_install.log
+	INSTLOG=$CACHELOC/${MODID}_install.log
   MAGISK_VER="$(grep MAGISK_VER_CODE /data/adb/magisk/util_functions.sh)"
 }
 
