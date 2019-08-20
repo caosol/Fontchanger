@@ -43,6 +43,13 @@
 - <a href="t.me/botom8">@botom8 Telegram</a>
 
 ## Changelog
+##v2.2 - 8.18.2019 - 8.20.2019
+* Add User-Submitted/Created Fonts
+* Add better install logging
+* Fix some typos
+* Add backup and restore of any installed font or emojis installed if installing te same version again or a newer version
+* Fix updating of font/emoji lists
+
 ##v2.1 - 8.16.2019
 * Fix a few install typos
 * Fix issue where people couldnt install due to internet check. Now if the first internet check passes it skips the other 2 checks.

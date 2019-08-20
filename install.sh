@@ -1,4 +1,3 @@
-#!/system/bin/sh
 ##########################################################################################
 #
 # Magisk Module Installer Script
@@ -29,7 +28,7 @@ SKIPMOUNT=false
 PROPFILE=false
 
 # Set to true if you need post-fs-data script
-POSTFSDATA=true
+POSTFSDATA=false
 
 # Set to true if you need late_start service script
 LATESTARTSERVICE=false
@@ -132,12 +131,33 @@ print_modname() {
 on_install() {
   # The following is the default implementation: extract $ZIPFILE/system to $MODPATH
   # Extend/change the logic to whatever you want
-  ui_print "- Extracting module files"
+if $BOOTMODE; then
+ ui_print " [-] Extracting module files [-] "
+  set -euxo pipefail
+  trap 'exxit $?' EXIT
 #  unzip -o "$ZIPFILE" 'system/*' -d $MODPATH >&2
   unzip -o "$ZIPFILE" "$MODID/*" -d ${MODPATH%/*}/ >&2
+  set_vars
+  log_start
+  if [ -f "$MOD_VER" ]; then
+    if [ $(grep_prop versionCode $MOD_VER) -le $(grep_prop versionCode $TMPDIR/module.prop) ]; then
+      ui_print " [!] Current or Older Version Installed [!] "
+      ui_print " [-] Backing up and Restoring Current Font and/or Emojis Before Updating [-] "
+      cp -rf /data/adb/modules/Fontchanger/system $MODPATH 2>&1
+      cp -f /data/adb/modules/Fontchanger/*.txt $MODPATH 2>&1
+      cp -f /data/adb/modules/Fontchanger/*.log $MODPATH 2>&1
+      if [ -d $MODPATH/system ]; then
+        ui_print " [-] Backup and Restore Successful [-] "
+      else
+        ui_print " [!] Backup Not Successful [!] "
+        ui_print " [-] You can Manually Backup and Restore By Copying and Pasting "
+        ui_print " /data/adb/modules/Fontchanger/system Folder and all txt files to $MODPATH After this Install "
+        ui_print " and Then Reboot [-] "
+      fi
+    fi
+  fi
   chmod 0755 $TMPDIR/busybox-$ARCH32
   ui_print " [-] Checking For Internet Connection... [-] "
-if $BOOTMODE; then
   chmod 0755 $TMPDIR/curl-$ARCH32
   chmod 0755 $TMPDIR/busybox-$ARCH32
   test_connection3
@@ -147,38 +167,41 @@ if $BOOTMODE; then
       test_connection
     fi
   fi
-  if "$CON1" || "$CON2"  ||  "$CON3"; then
+  if "$CON1" || "$CON2" || "$CON3"; then
     imageless_magisk && MODULESPATH=$(ls /data/adb/modules/* && ls /data/adb/modules_update/*) || MODULESPATH=$(ls /sbin/.core/img/*)
     if [ -f "$MODULESPATH/*/system/etc/*fonts*.xml" ] || [ -f "$MODULESPATH/*/system/fonts/*" ] && [ ! -f "$MODULESPATH/Fontchanger/system/fonts/*" ] || [ -f "$MODULESPATH/Fontchanger/system/etc/*font*.xml" ]; then
 			if [ ! -f "$MODULESPATH/*/disable" ]; then
 				NAME=$(get_var $MODULESPATH/*/module.prop "name=")
-				ui_print "[!]"
-				ui_print "[!] Module editing fonts detected!"
-				ui_print "[!] Module - '$NAME'[!]"
-				ui_print "[!]"
-        cancel
+				ui_print " [!] "
+				ui_print " [!] Module editing fonts detected [!] "
+				ui_print " [!] Module - '$NAME'[!] "
+				ui_print " [!] "
+        exxit
       fi
     fi
     rm /storage/emulated/0/Fontchanger/fonts-list.txt
-    rm /storage/emulated/o/Fontchanger/emojis-list.txt
+    rm /storage/emulated/0/Fontchanger/emojis-list.txt
     mkdir -p /storage/emulated/0/Fontchanger/Fonts/Custom
+    mkdir -p /storage/emulated/0/Fontchanger/Fonts/User
     mkdir -p /storage/emulated/0/Fontchanger/Emojis/Custom
     $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/fonts-list.txt https://john-fawkes.com/Downloads/fontlist/fonts-list.txt
+    $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/user-fonts-list.txt https://john-fawkes.com/Downloads/userfontlist/user-fonts-list.txt
     $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/emojis-list.txt https://john-fawkes.com/Downloads/emojilist/emojis-list.txt
-    if [ -f /storage/emulated/0/Fontchanger/fonts-list.txt ] && [ -f /storage/emulated/0/Fontchanger/emojis-list.txt ]; then
+    if [ -f /storage/emulated/0/Fontchanger/fonts-list.txt ] && [ -f /storage/emulated/0/Fontchanger/emojis-list.txt ] && [ -f /storage/emulated/0/Fontchanger/user-fonts-list.txt ]; then
       ui_print " [-] All Lists Downloaded Successfully... [-] "
     else
       ui_print " [!] Error Downloading Lists... [!] "
     fi
   else
-    cancel " [!] No Internet Detected... [!] "
+    exxit " [!] No Internet Detected... [!] "
   fi
 else
-  cancel " [-] TWRP Install NOT Supported. Please Install Booted with Internet Connection... [-] "
+  exxit " [-] TWRP Install NOT Supported. Please Install Booted with Internet Connection... [-] "
 fi
   imageless_magisk || sed -i "s|MODPATH=/data/adb/modules/$MODID|MODPATH=/sbin/.magisk/img/$MODID|" $TMPDIR/font_changer.sh
   cp -f $TMPDIR/curl-$ARCH32 $MODPATH/curl
   cp -f $TMPDIR/sleep-$ARCH32 $MODPATH/sleep
+  set +euxo pipefail
 }
 
 # Only some special files require specific permissions
@@ -200,6 +223,20 @@ set_permissions() {
   ui_print " [-] After Installing type su then hit enter and type font_changer in terminal [-] "
   ui_print " [-] Then Choose Option 5 to Read the How-to on How to Set up your Custom Fonts [-] "
   sleep 3
+#  if [ -f "$MOD_VER" ]; then
+#    if [ $(grep_prop versionCode $MOD_VER) -ge $(grep_prop versionCode $TMPDIR/module.prop) ]; then
+#      ui_print " [-] Restoring Backup Font and Emojis [-] "
+#      cp -rf $FCDIR/Backup/system /data/adb/modules/Fontchanger 2>&1
+#      if [ -d /data/adb/modules/Fontchanger/system ] && [ -f /data/adb/modules/Fontchanger/system/fonts/*.ttf ]; then
+#        ui_print " [-] Restore Successful [-] "
+#      else
+#        ui_print " [!] Restore Not Successful [!] "
+#        ui_print " [-] You can Manually Restore By Copying and Pasting "
+#        ui_print " $FCDIR/Backup/system Folder to /data/adb/modules/Fontchanger After Backing up "
+#        ui_print " By Following the Above Way to Backup and then Rebooting [-] "
+#      fi
+#    fi
+#  fi
 
   # Here are some examples:
   # set_perm_recursive  $MODPATH/system/lib       0     0       0755      0644
@@ -214,15 +251,23 @@ cancel() {
   abort "$1"
 }
 
+exxit() {
+  set +euxo pipefail
+  [ $1 -ne 0 ] && cancel "$2"
+  exit $1
+}
+
 test_connection() {
   ui_print " [-] Testing internet connection [-] "
-  $TMPDIR/busybox-$ARCH32 ping -q -c 1 -W 1 google.com >/dev/null 2>&1 && ui_print " [-] Internet Detected [-] "; CON1=true || { cancel " [-] Error, No Internet Connection [-] "; NCON=true; }
+  $TMPDIR/busybox-$ARCH32 ping -q -c 1 -W 1 google.com >/dev/null 2>&1 && ui_print " [-] Internet Detected [-] "; CON1=true; CON2=false; CON3=false || { exxit " [-] Error, No Internet Connection [-] "; NCON=true; }
 }
 
 test_connection2() {
   case "$($TMPDIR/curl-$ARCH32 -s --max-time 2 -I http://google.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
   [23]) ui_print " [-] HTTP connectivity is up [-] "
+    CON1=false
     CON2=true
+    CON3=false
     ;;
   5) ui_print " [!] The web proxy won't let us through [!] "
     NCON2=true
@@ -236,11 +281,13 @@ esac
 test_connection3() {
   $TMPDIR/busybox-$ARCH32 wget -q --tries=5 --timeout=10 http://www.google.com -O $TMPDIR/google.idx >/dev/null 2>&1
 if [ ! -s $TMPDIR/google.idx ]; then
-    ui_print " [!] Not Connected... [!] "
-    NCON3=true
+  ui_print " [!] Not Connected... [!] "
+  NCON3=true
 else
-    ui_print " [-] Connected..! [-] "
-    CON3=true
+  ui_print " [-] Connected..! [-] "
+  CON1=false
+  CON2=false
+  CON3=true
 fi
 rm -f $TMPDIR/google.idx
 }
@@ -254,6 +301,8 @@ if [ -d /cache ]; then CACHELOC=/cache; else CACHELOC=/data/cache; fi
 	AUTHOR=$(grep_prop author $TMPDIR/module.prop)
 	INSTLOG=$CACHELOC/${MODID}_install.log
   MAGISK_VER="$(grep MAGISK_VER_CODE /data/adb/magisk/util_functions.sh)"
+  FCDIR=/storage/emulated/0/Fontchanger
+  MOD_VER="/data/adb/modules/Fontchanger/module.prop"
 }
 
 log_handler() {
@@ -262,7 +311,7 @@ log_handler() {
 }
 
 log_start() {
-	if [ -f "$INSTLOG" ]; then
+	if [ -f $INSTLOG ]; then
     truncate -s 0 $INSTLOG
   else
     touch $INSTLOG

@@ -6,6 +6,7 @@
 # if Magisk change its mount point in the future
 [ -f $PWD/${0##*/} ] && MODPATH=$PWD || MODPATH=${0%/*}
 MODID=Fontchanger
+MAGISK_VER_CODE="$(grep MAGISK_VER_CODE /data/adb/magisk/util_functions.sh)"
 # This script will be executed in post-fs-data mode
 
 if [[ $PATH != *busybox:* ]]; then
@@ -32,13 +33,14 @@ if ! mount -o remount,rw /sbin 2>/dev/null; then
   mount -o bind,rw /dev/.sbin /sbin
 fi
 mkdir -p /sbin/.$MODID
-[ -h /sbin/.$MODID/$MODID ] && rm /sbin/.$MODID/$MODID \
-  || rm -rf /sbin/.$MODID/$MODID 2>/dev/null
-[ ${MAGISK_VER_CODE} -gt 18100 ] \
-  && ln -s $MODPATH /sbin/.$MODID/$MODID \
-  || cp -a $MODPATH /sbin/.$MODID/$MODID
-ln -f /sbin/.$MODID/$MODID/font_changer.sh /sbin/font_changer
-ln -f /sbin/.$MODID/$MODID/${MODID}-functions.sh /sbin/${MODID}-functions
+[ -h /sbin/.$MODID/$MODID ] || rm -rf /sbin/.$MODID/$MODID 2>/dev/null
+if [ ${MAGISK_VER_CODE} -gt 18100 ]; then
+  ln -fs $MODPATH /sbin/.$MODID/$MODID
+else
+  cp -a $MODPATH /sbin/.$MODID/$MODID
+fi
+ln -fs /sbin/.$MODID/$MODID/font_changer.sh /sbin/font_changer
+ln -fs /sbin/.$MODID/$MODID/${MODID}-functions.sh /sbin/${MODID}-functions
 
 # fix termux's PATH
 termuxSu=/data/data/com.termux/files/usr/bin/su

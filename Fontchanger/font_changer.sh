@@ -291,15 +291,18 @@ e_spinner() {
 
 # test_connection
 # tests if there's internet connection
+
 test_connection() {
   ui_print " [-] Testing internet connection [-] "
-  ping -q -c 1 -W 1 google.com >/dev/null 2>&1 && ui_print " [-] Internet Detected [-] "  && CON=true || { abort " [-] Error, No Internet Connection [-] ";NCON=true; }
+  ping -q -c 1 -W 1 google.com >/dev/null 2>&1 && ui_print " [-] Internet Detected [-] "; CON1=true; CON2=false; CON3=false || { abort " [-] Error, No Internet Connection [-] ";NCON=true; }
 }
 
 test_connection2() {
   case "$(curl -s --max-time 2 -I http://google.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
   [23]) ui_print " [-] HTTP connectivity is up [-] "
+    CON1=false
     CON2=true
+    CON3=false
     ;;
   5) ui_print " [!] The web proxy won't let us through [!] "
     NCON2=true
@@ -318,7 +321,9 @@ then
     NCON3=true
 else
     ui_print " [-] Connected..! [-] "
-    CON3=true
+  CON1=false
+  CON2=false
+  CON3=true
 fi
 rm -f $MODPATH/google.idx
 }
@@ -327,10 +332,14 @@ rm -f $MODPATH/google.idx
 # Logs included: VERLOG LOG oldVERLOG oldLOG
 upload_logs() {
   $BBok && {
-    test_connection3
-    [ $CON3 ] || test_connection2
-    [ $CON2 ] || test_connection
-    if [ $CON ] || [ $CON2 ] || [ $CON3 ]; then
+  test_connection3
+  if ! "$CON3"; then
+    test_connection2
+    if ! "$CON2"; then
+      test_connection
+    fi
+  fi
+  if "$CON1" || "$CON2" || "$CON3"; then
       echo "Uploading logs"
       [ -s $VERLOG ] && verUp=$(cat $VERLOG | nc termbin.com 9999) || verUp=none
       [ -s $oldVERLOG ] && oldverUp=$(cat $oldVERLOG | nc termbin.com 9999) || oldverUp=none
@@ -421,18 +430,20 @@ echo -e "${W}[1]${N} ${G} - Choose From Over 200 Fonts${N}"
 echo " "
 echo -e "${W}[2]${N} ${G} - List Fonts in Folder (Custom)${N}"
 echo " "
-echo -e "${W}[3]${N} ${G} - Change to Stock Font or Emoji${N}"
+echo -e "${W}[3]${N} ${G} - Change Emojis${N}"
 echo " "
-echo -e "${W}[4]${N} ${G} - Change Emojis${N}"
+echo -e "${W}[4]${N} ${G} - Choose From User-Submitted Custom Fonts${N}"
 echo " "
-echo -e "${W}[5]${N} ${G} - How to Set Up the Font Folder${N}"
+echo -e "${W}[5]${N} ${G} - Change to Stock Font or Emoji${N}"
 echo " "
-echo -e "${W}[6]${N} ${G} - Help (Options)${N}"
+echo -e "${W}[6]${N} ${G} - How to Set Up the Font Folder${N}"
 echo " "
-echo -e "${W}[7]${N} ${G} - Update lists for Emojis and Fonts${N}"
+echo -e "${W}[7]${N} ${G} - Help (Options)${N}"
 echo " "
-#echo -e "${W}[8]${N} ${G} - Take Logs${N}"
-#echo " "
+echo -e "${W}[8]${N} ${G} - Update lists for Emojis and Fonts${N}"
+echo " "
+echo -e "${W}[9]${N} ${G} - Take Logs${N}"
+echo " "
 echo -e "${R}[Q] - Quit${N}"
 echo " "
 echo -n "${B}[CHOOSE] : ${N}"
@@ -445,27 +456,30 @@ read -r choice
     2) echo "${G}[-] Custom Font Menu Selected...${N}"
       custom_menu
       ;;
-    3) echo "${B}[-] Stock Font/Emoji Menu Selected...${N}"
-      default_menu
-      ;;
-    4) echo "${R}[-] Emoji Menu Selected...${N}"
+    3) echo "${R}[-] Emoji Menu Selected...${N}"
       emoji_menu
       ;;
-    5) echo "${C}[-] Custom Setup Help Selected...${N}"
+    4) echo "${BL}[-] User-Submitted Fonts Selected...${N}"
+      user_menu
+      ;;
+    5) echo "${B}[-] Stock Font/Emoji Menu Selected...${N}"
+      default_menu
+      ;;
+    6) echo "${C}[-] Custom Setup Help Selected...${N}"
       help_custom
       ;;
-    6) echo "${B}[-] Option Help Selected...${N}"
+    7) echo "${B}[-] Option Help Selected...${N}"
       help
       ;;
-    7) echo "${Y}[-] Update Lists of Emojis/Fonts Selected..."
+    8) echo "${Y}[-] Update Lists of Emojis/Fonts Selected..."
       update_lists
       ;;
-#    8) log_print " Collecting logs and creating archive "
-#      magisk_version
-#      collect_logs
-#      upload_logs
-#      quit
-#      ;;
+    9) log_print " Collecting logs and creating archive "
+      magisk_version
+      collect_logs
+      upload_logs
+      quit
+      ;;
     q|Q) echo "${R}[-] Quiting...${N}"
       clear
       quit
