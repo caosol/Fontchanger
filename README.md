@@ -43,6 +43,9 @@
 - <a href="t.me/botom8">@botom8 Telegram</a>
 
 ## Changelog
+##v2.3 - 8.21.2019
+* Fix New Installs
+
 ##v2.2 - 8.18.2019 - 8.20.2019
 * Add User-Submitted/Created Fonts
 * Add better install logging

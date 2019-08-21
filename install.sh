@@ -179,11 +179,14 @@ if $BOOTMODE; then
         exxit
       fi
     fi
-    rm /storage/emulated/0/Fontchanger/fonts-list.txt
-    rm /storage/emulated/0/Fontchanger/emojis-list.txt
-    mkdir -p /storage/emulated/0/Fontchanger/Fonts/Custom
-    mkdir -p /storage/emulated/0/Fontchanger/Fonts/User
-    mkdir -p /storage/emulated/0/Fontchanger/Emojis/Custom
+    for i in /storage/emulated/0/Fontchanger/*-list.txt; do
+      if [ -e $i ]; then
+        rm $i 2>&1
+      fi
+    done
+    mkdir -p /storage/emulated/0/Fontchanger/Fonts/Custom 2>&1
+    mkdir -p /storage/emulated/0/Fontchanger/Fonts/User 2>&1
+    mkdir -p /storage/emulated/0/Fontchanger/Emojis/Custom 2>&1
     $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/fonts-list.txt https://john-fawkes.com/Downloads/fontlist/fonts-list.txt
     $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/user-fonts-list.txt https://john-fawkes.com/Downloads/userfontlist/user-fonts-list.txt
     $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/emojis-list.txt https://john-fawkes.com/Downloads/emojilist/emojis-list.txt
@@ -199,8 +202,8 @@ else
   exxit " [-] TWRP Install NOT Supported. Please Install Booted with Internet Connection... [-] "
 fi
   imageless_magisk || sed -i "s|MODPATH=/data/adb/modules/$MODID|MODPATH=/sbin/.magisk/img/$MODID|" $TMPDIR/font_changer.sh
-  cp -f $TMPDIR/curl-$ARCH32 $MODPATH/curl
-  cp -f $TMPDIR/sleep-$ARCH32 $MODPATH/sleep
+  cp -f $TMPDIR/curl-$ARCH32 $MODPATH/curl 2>&1
+  cp -f $TMPDIR/sleep-$ARCH32 $MODPATH/sleep 2>&1
   set +euxo pipefail
 }
 
