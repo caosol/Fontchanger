@@ -43,6 +43,9 @@
 - <a href="t.me/botom8">@botom8 Telegram</a>
 
 ## Changelog
+##v2.4 - 8.21.2019
+* Fix installs without any font or emoji installed first with the backup
+
 ##v2.3 - 8.21.2019
 * Fix New Installs
 

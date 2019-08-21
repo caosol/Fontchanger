@@ -142,17 +142,19 @@ if $BOOTMODE; then
   if [ -f "$MOD_VER" ]; then
     if [ $(grep_prop versionCode $MOD_VER) -le $(grep_prop versionCode $TMPDIR/module.prop) ]; then
       ui_print " [!] Current or Older Version Installed [!] "
-      ui_print " [-] Backing up and Restoring Current Font and/or Emojis Before Updating [-] "
-      cp -rf /data/adb/modules/Fontchanger/system $MODPATH 2>&1
-      cp -f /data/adb/modules/Fontchanger/*.txt $MODPATH 2>&1
-      cp -f /data/adb/modules/Fontchanger/*.log $MODPATH 2>&1
-      if [ -d $MODPATH/system ]; then
-        ui_print " [-] Backup and Restore Successful [-] "
-      else
-        ui_print " [!] Backup Not Successful [!] "
-        ui_print " [-] You can Manually Backup and Restore By Copying and Pasting "
-        ui_print " /data/adb/modules/Fontchanger/system Folder and all txt files to $MODPATH After this Install "
-        ui_print " and Then Reboot [-] "
+      if [ -d /data/adb/modules/Fontchanger/system ]; then
+        ui_print " [-] Backing up and Restoring Current Font and/or Emojis Before Updating [-] "
+        cp -rf /data/adb/modules/Fontchanger/system $MODPATH 2>&1
+        cp -f /data/adb/modules/Fontchanger/*.txt $MODPATH 2>&1
+        cp -f /data/adb/modules/Fontchanger/*.log $MODPATH 2>&1
+        if [ -d $MODPATH/system ]; then
+          ui_print " [-] Backup and Restore Successful [-] "
+        else
+          ui_print " [!] Backup Not Successful [!] "
+          ui_print " [-] You can Manually Backup and Restore By Copying and Pasting "
+          ui_print " /data/adb/modules/Fontchanger/system Folder and all txt files to $MODPATH After this Install "
+          ui_print " and Then Reboot [-] "
+        fi
       fi
     fi
   fi
