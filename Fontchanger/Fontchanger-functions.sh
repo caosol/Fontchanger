@@ -1,4 +1,4 @@
-invaild() {
+invainvaild() {
   echo -e "${R}Invaild Option...${N}"
   clear
 }
@@ -7,11 +7,8 @@ return_menu() {
   echo -n "${R}Return to menu? < y | n > : ${N}"
   read -r mchoice
   case $mchoice in
-  y | Y) menu ;;
-  n | N)
-    clear
-    quit
-    ;;
+   y|Y) menu ;;
+  n|N) clear && quit ;;
   *) invaild ;;
   esac
 }
@@ -22,8 +19,8 @@ emoji_reboot_menu() {
   echo -n "${R}Reboot? < y | n > : ${N}"
   read -r mchoice
   case $mchoice in
-  y | Y) reboot ;;
-  n | N) return_menu ;;
+  y|Y) reboot ;;
+  n|N) return_menu ;;
   *) invaild ;;
   esac
 }
@@ -34,8 +31,8 @@ font_reboot_menu() {
   echo -n "${R}Reboot? < y | n > : ${N}"
   read -r mchoice
   case $mchoice in
-  y | Y) reboot ;;
-  n | N) return_menu ;;
+  y|Y) reboot ;;
+  n|N) return_menu ;;
   *) invaild ;;
   esac
 }
@@ -102,6 +99,18 @@ collect_logs() {
   # Create temporary directory
   mkdir -pv $TMPLOGLOC >> $LOG 2>&1
 
+# Saving the current prop values
+  log_handler "RESETPROPS"
+  echo "==========================================" >> $LOG 2>&1
+  resetprop >> $LOG 2>&1
+  log_print " Collecting Modules Installed "
+  echo "==========================================" >> $LOG 2>&1
+  ls /data/adb/modules >> $LOG 2>&1
+  log_print " Collecting Logs for Installed Files "
+  echo "==========================================" >> $LOG 2>&1
+  log_handler "$(du -ah $MODPATH)" >> $LOG 2>&1
+  echo "==========================================" >> $LOG 2>&1
+
   # Saving Magisk and module log files and device original build.prop
   for ITEM in $LOGGERS; do
     if [ -f "$ITEM" ]; then
@@ -116,13 +125,9 @@ collect_logs() {
       cp -af $ITEM ${TMPLOGLOC}/${BPNAME} >> $LOG 2>&1
     else
       case "$ITEM" in
-      */cache)
-        if [ "$CACHELOC" == "/cache" ]; then
-          CACHELOCTMP=/cache
-        else
-          CACHELOCTMP=/data/cache
-        fi
-        ITEMTPM=$(echo $ITEM | sed 's|$CACHELOC|$CACHELOCTMP|')
+      *$FCDIR)
+          FCDIRLOCTMP=$FCDIR/Logs
+        ITEMTPM=$(echo $ITEM | sed 's|$FCDIR|$FCDIRLOCTMP|')
         if [ -f "$ITEMTPM" ]; then
           cp -af $ITEMTPM $TMPLOGLOC >> $LOG 2>&1
         else
@@ -136,33 +141,22 @@ collect_logs() {
     fi
   done
 
-  # Saving the current prop values
-  log_handler "RESETPROPS"
-  echo "==========================================" >> $LOG 2>&1
-  resetprop >> $LOG 2>&1
-  log_print " Collecting Modules Installed "
-  echo "==========================================" >> $LOG 2>&1
-  ls /data/adb/modules >> $LOG 2>&1
-  log_print " Collecting Logs for Installed Files "
-  echo "==========================================" >> $LOG 2>&1
-  log_handler "$(du -ah $MODPATH)" >> $LOG 2>&1
-  echo "==========================================" >> $LOG 2>&1
-
   # Package the files
-  cd $CACHELOC
-  tar -zcvf fontchanger_logs.tar.xz fontchanger_logs >> $LOG 2>&1
+  cd $FCDIR/Fontchanger_logs
+#  tar -zcvf Fontchanger_logs.tar.xz Fontchanger_logs >> $LOG 2>&1
+  zip -9v "Fontchanger_logs.zip" ./*
 
   # Copy package to internal storage
-  mv -f $CACHELOC/fontchanger_logs.tar.xz $SDCARD >> $LOG 2>&1
+  cp -f $FCDIR/Fontchanger_logs/Fontchanger_logs.zip $SDCARD >> $LOG 2>&1
 
-  if [ -e $SDCARD/fontchanger_logs.tar.xz ]; then
-    log_print "fontchanger_logs.tar.xz Created Successfully."
+  if [ -e $SDCARD/Fontchanger_logs.zip ]; then
+    log_print "Fontchanger_logs.zip Created Successfully."
   else
     log_print "Archive File Not Created. Error in Script. Please contact John Fawks"
   fi
 
   # Remove temporary directory
-  rm -rf $TMPLOGLOC >> $LOG 2>&1
+#  rm -rf $TMPLOGLOC >> $LOG 2>&1
   log_handler "Logs and information collected."
 }
 #######################################################################################################
@@ -203,9 +197,6 @@ Options:
   e.g., font_changer -s
   e.g., font_changer --current
 
-  -u|--upgrade                  upgrade font and emoji lists
-  e.g., font_changer -u
-  e.g., font_changer --upgrade
 EOF
 exit
 }
@@ -287,7 +278,7 @@ apply_emoji() {
   if [ ! -d $MODPATH/system/fonts ]; then
     mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
   fi
- [ -e $FCDIR/Emojis/$choice2.zip ] || curl -k -o "$FCDIR/Emojis/$choice2.zip" https://john-fawkes.com/Downloads/emoji/$choice2.zip
+  [ -e $FCDIR/Emojis/$choice2.zip ] || curl -k -o "$FCDIR/Emojis/$choice2.zip" https://john-fawkes.com/Downloads/emoji/$choice2.zip
   mkdir -p $FCDIR/Emojis/$choice2 >/dev/null 2>&1
   unzip -o "$FCDIR/Emojis/$choice2.zip" 'system/*' -d $FCDIR/Emojis/$choice2 >&2
   mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
@@ -354,7 +345,7 @@ emoji_menu() {
     else
       apply_emoji
     fi
-    ;;
+  ;;
   esac
 }
 #######################################################################################################
@@ -403,72 +394,77 @@ list_custom_emoji() {
 
 
 custom_emoji_menu() {
-  list_custom_emoji
-  wrong=$(cat $MODPATH/customemojilist.txt | wc -l)
-  echo -e "${G}Please Choose an Emoji to Apply. Enter the Corresponding Number...${N}"
-  read -r choice
-  case $choice in
-  $choice)
-    if [ $choice == "q" ]; then
-      echo "${R}Quiting...${N}"
-      clear
-      quit
-    elif [ $choice -gt $wrong ]; then
-      echo "${Y}[!] Item Not Available! Try Again... [!]${N}"
-      sleep 1.5
-      clear
-    else
-      apply_custom_emoji
-    fi
+  if [ $(ls -A $FCDIR/Emojis/Custom) ]; then
+    list_custom_emoji
+    wrong=$(cat $MODPATH/customemojilist.txt | wc -l)
+    echo -e "${G}Please Choose an Emoji to Apply. Enter the Corresponding Number...${N}"
+    read -r choice
+    case $choice in
+    $choice)
+      if [ $choice == "q" ]; then
+        echo "${R}Quiting...${N}"
+        clear
+        quit
+      elif [ $choice -gt $wrong ]; then
+        echo "${Y}[!] Item Not Available! Try Again... [!]${N}"
+        sleep 1.5
+        clear
+      else
+        apply_custom_emoji
+      fi
     ;;
-  esac
+    esac
+  else
+    echo "${R}No Custom Fonts Found${N}"
+    return_menu
+  fi
 }
 #######################################################################################################
 #                                         CUSTOM FONTS                                                #
 #######################################################################################################
 apply_custom_font() {
-echo "${B}Applying Custom Font...${N}"
-choice2="$(grep -w $choice $MODPATH/customfontlist.txt | tr -d '[ ]' | tr -d $choice | tr -d ' ')"
-cusfont=$(cat $MODPATH/listforcustom.txt)
-if [ -e $FCDIR/dump.txt ]; then
-  truncate -s 0 $FCDIR/dump.txt
-else
-  touch $FCDIR/dump.txt
-fi
-for i in ${cusfont[@]} ; do
-  if [ -e $FCDIR/Fonts/Custom/$choice2/$i ]; then
-    echo "$i found" >> $FCDIR/dump.txt && echo "${B}$i Found${N}"
+  echo "${B}Applying Custom Font...${N}"
+  choice2="$(grep -w $choice $MODPATH/customfontlist.txt | tr -d '[ ]' | tr -d $choice | tr -d ' ')"
+  cusfont=$(cat $MODPATH/listforcustom.txt)
+  if [ -e $FCDIR/dump.txt ]; then
+    truncate -s 0 $FCDIR/dump.txt
+  else
+    touch $FCDIR/dump.txt
   fi
-  if [ ! -e $FCDIR/Fonts/Custom/$choice2/$i ]; then
-    echo "$i NOT FOUND" >> $FCDIR/dump.txt && echo "${R}$i NOT FOUND${N}"
+  for i in ${cusfont[@]} ; do
+    if [ -e $FCDIR/Fonts/Custom/$choice2/$i ]; then
+      echo "$i found" >> $FCDIR/dump.txt && echo "${B}$i Found${N}"
+    fi
+    if [ ! -e $FCDIR/Fonts/Custom/$choice2/$i ]; then
+      echo "$i NOT FOUND" >> $FCDIR/dump.txt && echo "${R}$i NOT FOUND${N}"
+    fi
+  done
+  if grep -wq "$i NOT FOUND" $FCDIR/dump.txt; then
+    abort "${R}Script Will Not Continue Until All ttf Files Exist!${N}"
   fi
-done
-if grep -wq "$i NOT FOUND" $FCDIR/dump.txt; then
-  abort "${R}Script Will Not Continue Until All ttf Files Exist!${N}"
-fi
-PASSED=true
+  PASSED=true
   for i in $MODPATH/system/fonts/*Emoji*.ttf; do
     if [ -e $i ]; then
       mv -f $i $MODPATH
     fi
   done
-rm -rf $MODPATH/system/fonts >/dev/null 2>&1
-mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
+  rm -rf $MODPATH/system/fonts >/dev/null 2>&1
+  mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
   for i in $MODPATH/*Emoji*.ttf; do
     if [ -e $i ]; then
       mv -f $i $MODPATH/system/fonts
     fi
   done
-cp -f $FCDIR/Fonts/Custom/$choice2/* $MODPATH/system/fonts/
-set_perm_recursive $MODPATH/system/fonts 0 0 0755 0644 >/dev/null 2>&1
-[ -f $CFONT ] || touch $CFONT
-truncate -s 0 $CFONT
-echo -n "CURRENT=$choice2" >> $CFONT
-if [ $PASSED == true ] && [ -d $MODPATH/system/fonts ]; then
-  font_reboot_menu
-else
-  retry
-fi
+  cp -f $FCDIR/Fonts/Custom/$choice2/* $MODPATH/system/fonts/
+  set_perm_recursive $MODPATH/system/fonts 0 0 0755 0644 >/dev/null 2>&1
+  [ -f $CFONT ] || touch $CFONT
+  truncate -s 0 $CFONT
+  echo -n "CURRENT=$choice2" >> $CFONT
+  if [ $PASSED == true ] && [ -d $MODPATH/system/fonts ]; then
+    font_reboot_menu
+  else
+    retry
+  fi
 }
 
 list_custom_fonts() {
@@ -483,59 +479,64 @@ list_custom_fonts() {
 }
 
 custom_menu() {
-  list_custom_fonts
-  wrong=$(cat $MODPATH/customfontlist.txt | wc -l)
-  echo -e "${G}Please Choose a Font to Apply. Enter the Corresponding Number...${N}"
-  read -r choice
-  case $choice in
-  $choice)
-    if [ $choice == "q" ]; then
-      echo "${R}Quiting...${N}"
-      clear
-      quit
-    elif [ $choice -gt $wrong ]; then
-      echo "${Y}[!] Item Not Available! Try Again... [!]${N}"
-      sleep 1.5
-      clear
-    else
-      apply_custom_font
-    fi
+  if [ $(ls -A "$FCDIR/Fonts/Custom") ]; then
+    list_custom_fonts
+    wrong=$(cat $MODPATH/customfontlist.txt | wc -l)
+    echo -e "${G}Please Choose a Font to Apply. Enter the Corresponding Number...${N}"
+    read -r choice
+    case $choice in
+    $choice)
+      if [ $choice == "q" ]; then
+        echo "${R}Quiting...${N}"
+        clear
+        quit
+      elif [ $choice -gt $wrong ]; then
+        echo "${Y}[!] Item Not Available! Try Again... [!]${N}"
+        sleep 1.5
+        clear
+      else
+        apply_custom_font
+      fi
     ;;
-  esac
+    esac
+  else
+    echo "${R}No Custom Fonts Found${N}"
+    return_menu
+  fi
 }
 #######################################################################################################
 #                                         DOWNLOADABLE FONTS                                          #
 #######################################################################################################
 apply_font() {
-choice2="$(grep -w $choice $MODPATH/fontlist.txt | tr -d '[ ]' | tr -d $choice | tr -d ' ')"
-echo -e "${B}Applying Font. Please Wait...${N}"
-sleep 2
-if [ -f "$MODPATH/system/fonts/*Emoji*.ttf" ]; then
+  choice2="$(grep -w $choice $MODPATH/fontlist.txt | tr -d '[ ]' | tr -d $choice | tr -d ' ')"
+  echo -e "${B}Applying Font. Please Wait...${N}"
+  sleep 2
   for i in $MODPATH/system/fonts/*Emoji*.ttf; do
-    mv -f $i $MODPATH
+    if [ -e "$i" ]; then
+      mv -f $i $MODPATH
+    fi
   done
-fi
-rm -rf $MODPATH/system/fonts >/dev/null 2>&1
-mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
-[ -e $FCDIR/Fonts/$choice2.zip ] || curl -k -o "$FCDIR/Fonts/$choice2.zip" https://john-fawkes.com/Downloads/$choice2.zip
-mkdir -p $FCDIR/Fonts/$choice2 >/dev/null 2>&1
-unzip -o "$FCDIR/Fonts/$choice2.zip" 'system/*' -d $FCDIR/Fonts/$choice2 >&2
-mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
-cp -rf $FCDIR/Fonts/$choice2/system/fonts $MODPATH/system
-if [ -f "$MODPATH/*Emoji*.ttf" ]; then
+  rm -rf $MODPATH/system/fonts >/dev/null 2>&1
+  mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
+  [ -e $FCDIR/Fonts/$choice2.zip ] || curl -k -o "$FCDIR/Fonts/$choice2.zip" https://john-fawkes.com/Downloads/$choice2.zip
+  mkdir -p $FCDIR/Fonts/$choice2 >/dev/null 2>&1
+  unzip -o "$FCDIR/Fonts/$choice2.zip" 'system/*' -d $FCDIR/Fonts/$choice2 >&2
+  mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
+  cp -rf $FCDIR/Fonts/$choice2/system/fonts $MODPATH/system
   for i in $MODPATH/*Emoji*.ttf; do
-    mv -f $i $MODPATH/system/fonts
+    if [ -e "$i" ]; then
+      mv -f $i $MODPATH/system/fonts
+    fi
   done
-fi
-set_perm_recursive $MODPATH/system/fonts 0 0 0755 0644 >/dev/null 2>&1
-[ -f $CFONT ] || touch $CFONT
-truncate -s 0 $CFONT
-echo -n "CURRENT=$choice2" >>$CFONT
-if [ -f "$FCDIR/Fonts/$choice2.zip" ] && [ -d $MODPATH/system/fonts ]; then
-  font_reboot_menu
-else
-  retry
-fi
+  set_perm_recursive $MODPATH/system/fonts 0 0 0755 0644 >/dev/null 2>&1
+  [ -f $CFONT ] || touch $CFONT
+  truncate -s 0 $CFONT
+  echo -n "CURRENT=$choice2" >>$CFONT
+  if [ -f "$FCDIR/Fonts/$choice2.zip" ] && [ -d $MODPATH/system/fonts ]; then
+    font_reboot_menu
+  else
+    retry
+  fi
 }
 
 list_fonts() {
@@ -560,7 +561,7 @@ font_menu() {
   num=1
   for font in ${fonts[@]}; do
     echo -e "${W}[$num]${N} ${G}$font${N}" && echo " [$num] $font" >>$MODPATH/fontlist.txt
-    num=$((num + 1))
+  num=$((num + 1))
   done
   echo ""
   wrong=$(cat $MODPATH/fontlist.txt | wc -l)
@@ -579,7 +580,7 @@ font_menu() {
     else
       apply_font
     fi
-    ;;
+  ;;
   esac
 }
 #######################################################################################################
@@ -590,47 +591,43 @@ default_menu() {
   echo -e "${G}Please Enter (y)es or (n)o...${N}"
   read -r choice
   case $choice in
-  y | yes)
+  y|yes)
     echo -e "${B}Restore Default Selected...${N}"
-    if [ -e "$MODPATH/system/fonts/*Emoji*.ttf" ]; then
-      echo -e "${B}Would You like to Keep Your Emojis?${N}"
-      echo -e "${B}Please Enter (y)es or (n)o...${N}"
-      read -r emojichoice
-      case $emojichoice in
-      y | yes)
-        echo -e "${Y}Backing up Emojis${N}"
-        mkdir -p $FCDIR/Emojis/Backups >/dev/null 2>&1
-        for i in $MODPATH/*Emoji*.ttf; do
+    for i in $MODPATH/system/fonts/*Emoji*.ttf; do
+      if [ -e "$i" ]; then
+        echo -e "${B}Would You like to Keep Your Emojis?${N}"
+        echo -e "${B}Please Enter (y)es or (n)o...${N}"
+        read -r emojichoice
+        case $emojichoice in
+        y|yes)
+          echo -e "${Y}Backing up Emojis${N}"
+          mkdir -p $FCDIR/Emojis/Backups >/dev/null 2>&1
           mv -f $i $FCDIR/Emojis/Backups >/dev/null 2>&1
-        done
-        break
         ;;
-      n | no)
-        echo -e "${R}Removing Emojis${N}"
-        break
+        n|no)
+          echo -e "${R}Removing Emojis${N}"
+          truncate -s 0 $CEMOJI
         ;;
-      esac
-    fi
-    rm -rf $MODPATH/system/fonts >/dev/null 2>&1
-    for i in $FCDIR/Emojis/Backup/*Emoji*.ttf; do
-      if [ -e $i ]; then
-        mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
-        mv $i $MODPATH/system/fonts >/dev/null 2>&1
+        esac
       fi
     done
-    rm $FCDIR/Emojis/Backup  >/dev/null 2>&1
+    rm -rf $MODPATH/system >/dev/null 2>&1
+    for i in $FCDIR/Emojis/Backups/*Emoji*.ttf; do
+      if [ -e "$i" ]; then
+        mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
+        mv -f $i $MODPATH/system/fonts >/dev/null 2>&1
+      fi
+    done
+    rm $FCDIR/Emojis/Backups  >/dev/null 2>&1
     truncate -s 0 $CFONT
-    break
-    ;;
-  n | no)
+  ;;
+  n|no)
     echo -e "${C}Keeping Modded Font...${N}"
-    break
-    ;;
-  *)
+  ;;
+  *)  
     invaild
     sleep 1.5
-    clear
-    ;;
+  ;;
   esac
   return_menu
 }
@@ -638,42 +635,42 @@ default_menu() {
 #                                       User-Submitted Fonts                                          #
 #######################################################################################################
 apply_user_font() {
-choice2="$(grep -w $choice $MODPATH/userfontlist.txt | tr -d '[ ]' | tr -d $choice | tr -d ' ')"
-echo -e "${B}Applying Font. Please Wait...${N}"
-sleep 2
-if [ -f "$MODPATH/system/fonts/*Emoji*.ttf" ]; then
+  choice2="$(grep -w $choice $MODPATH/userfontlist.txt | tr -d '[ ]' | tr -d $choice | tr -d ' ')"
+  echo -e "${B}Applying Font. Please Wait...${N}"
+  sleep 2
   for i in $MODPATH/system/fonts/*Emoji*.ttf; do
-    mv -f $i $MODPATH
+    if [ -e "$i" ]; then
+      mv -f $i $MODPATH
+    fi
   done
-fi
-rm -rf $MODPATH/system/fonts >/dev/null 2>&1
-mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
-[ -e $FCDIR/Fonts/User/$choice2.zip ] || curl -k -o "$FCDIR/Fonts/User/$choice2.zip" https://john-fawkes.com/Downloads/User/$choice2.zip
-mkdir -p $FCDIR/Fonts/$choice2 >/dev/null 2>&1
-unzip -o "$FCDIR/Fonts/$choice2.zip" 'system/*' -d $FCDIR/Fonts/$choice2 >&2
-mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
-cp -rf $FCDIR/Fonts/$choice2/system/fonts $MODPATH/system
-if [ -f "$MODPATH/*Emoji*.ttf" ]; then
+  rm -rf $MODPATH/system/fonts >/dev/null 2>&1
+  mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
+  [ -e $FCDIR/Fonts/User/$choice2.zip ] || curl -k -o "$FCDIR/Fonts/User/$choice2.zip" https://john-fawkes.com/Downloads/User/$choice2.zip
+  mkdir -p $FCDIR/Fonts/User/$choice2 >/dev/null 2>&1
+  unzip -o "$FCDIR/Fonts/User/$choice2.zip" 'system/*' -d $FCDIR/Fonts/$choice2 >&2
+  mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
+  cp -rf $FCDIR/Fonts/User/$choice2/system/fonts $MODPATH/system
   for i in $MODPATH/*Emoji*.ttf; do
-    mv -f $i $MODPATH/system/fonts
+    if [ -e "$i" ]; then
+      mv -f $i $MODPATH/system/fonts
+    fi
   done
-fi
-set_perm_recursive $MODPATH/system/fonts 0 0 0755 0644 >/dev/null 2>&1
-[ -f $CFONT ] || touch $CFONT
-truncate -s 0 $CFONT
-echo -n "CURRENT=$choice2" >>$CFONT
-if [ -f "$FCDIR/Fonts/User/$choice2.zip" ] && [ -d $MODPATH/system/fonts ]; then
-  font_reboot_menu
-else
-  retry
-fi
+  set_perm_recursive $MODPATH/system/fonts 0 0 0755 0644 >/dev/null 2>&1
+  [ -f $CFONT ] || touch $CFONT
+  truncate -s 0 $CFONT
+  echo -n "CURRENT=$choice2" >>$CFONT
+  if [ -f "$FCDIR/Fonts/User/$choice2.zip" ] && [ -d $MODPATH/system/fonts ]; then
+    font_reboot_menu
+  else
+    retry
+  fi
 }
 
 list_user_fonts() {
   num=1
   rm $MODPATH/userfontlist.txt >/dev/null 2>&1
   fonts=($(cat $FCDIR/user-fonts-list.txt | sed 's/.zip//'))
-  touch $MODPATH/fontlist.txt >/dev/null 2>&1
+  touch $MODPATH/userfontlist.txt >/dev/null 2>&1
   for i in ${fonts[@]}; do
     ProgressBar $num ${#fonts[@]}
     num=$((num + 1))
@@ -686,7 +683,6 @@ user_font_menu() {
   clear
   echo "$div"
   title_div "User-Submitted Fonts"
-  echo "$div"
   echo ""
   num=1
   for font in ${fonts[@]}; do
@@ -710,7 +706,7 @@ user_font_menu() {
     else
       apply_user_font
     fi
-    ;;
+  ;;
   esac
 }
 #######################################################################################################
@@ -724,77 +720,201 @@ update_lists() {
   instVer2=$(cat $FCDIR/emojis-list.txt | wc -l)
   instVer3=$(cat $FCDIR/user-fonts-list.txt | wc -l)
   echo -e "${B}Checking For Updates...${N}"
-if [ $currVer -gt $instVer ] || [ $currVer -lt $instVer ]; then
-  echo " [-] Checking For Internet Connection... [-] "
-  test_connection3
-  if ! "$CON3"; then
-    test_connection2
-    if ! "$CON2"; then
-      test_connection
+  if [ $currVer -gt $instVer ] || [ $currVer -lt $instVer ]; then
+    echo " [-] Checking For Internet Connection... [-] "
+    test_connection3
+    if ! "$CON3"; then
+      test_connection2
+      if ! "$CON2"; then
+        test_connection
+      fi
     fi
-  fi
-  if "$CON1" || "$CON2" || "$CON3"; then
-    rm $FCDIR/fonts-list.txt >/dev/null 2>&1
-    mkdir -p $FCDIR/Fonts/Custom >/dev/null 2>&1
-    curl -k -o $FCDIR/fonts-list.txt https://john-fawkes.com/Downloads/fontlist/fonts-list.txt
-    if [ $instVer == $currVer ]; then
-      echo " [-] Fonts Lists Downloaded Successfully... [-] "
+    if "$CON1" || "$CON2" || "$CON3"; then
+      rm $FCDIR/fonts-list.txt >/dev/null 2>&1
+      mkdir -p $FCDIR/Fonts/Custom >/dev/null 2>&1
+      curl -k -o $FCDIR/fonts-list.txt https://john-fawkes.com/Downloads/fontlist/fonts-list.txt
+      if [ $instVer != $currVer ]; then
+        echo " [-] Fonts Lists Downloaded Successfully... [-] "
+      else
+        echo " [!] Error Downloading Fonts Lists... [!] "
+      fi
     else
-      echo " [!] Error Downloading Fonts Lists... [!] "
+      abort " [!] No Internet Detected... [!] "
     fi
   else
-    abort " [!] No Internet Detected... [!] "
+    echo "${R}No Font List Updates Found${N}"
   fi
-else
-  echo "${R}No Font List Updates Found${N}"
-fi
-if [ $currVer2 -gt $instVer2 ] || [ $currVer2 -lt $instVer2 ]; then
-  echo " [-] Checking For Internet Connection... [-] "
-  test_connection3
-  if ! "$CON3"; then
-    test_connection2
-    if ! "$CON2"; then
-      test_connection
+  if [ $currVer2 -gt $instVer2 ] || [ $currVer2 -lt $instVer2 ]; then
+    echo " [-] Checking For Internet Connection... [-] "
+    test_connection3
+    if ! "$CON3"; then
+      test_connection2
+      if ! "$CON2"; then
+        test_connection
+      fi
     fi
-  fi
-  if "$CON1" || "$CON2" || "$CON3"; then
-    rm $FCDIR/emojis-list.txt >/dev/null 2>&1
-    mkdir -p $FCDIR/Emojis/Custom >/dev/null 2>&1
-    curl -k -o $FCDIR/emojis-list.txt https://john-fawkes.com/Downloads/emojilist/emojis-list.txt
-    if [ $instVer2 == $currVer2 ]; then
-      echo " [-] Emoji Lists Downloaded Successfully... [-] "
+    if "$CON1" || "$CON2" || "$CON3"; then
+      rm $FCDIR/emojis-list.txt >/dev/null 2>&1
+      mkdir -p $FCDIR/Emojis/Custom >/dev/null 2>&1
+      curl -k -o $FCDIR/emojis-list.txt https://john-fawkes.com/Downloads/emojilist/emojis-list.txt
+      if [ $instVer2 != $currVer2 ]; then
+        echo " [-] Emoji Lists Downloaded Successfully... [-] "
+      else
+        echo " [!] Error Downloading Emoji Lists... [!] "
+      fi
     else
-      echo " [!] Error Downloading Emoji Lists... [!] "
+      abort " [!] No Internet Detected... [!] "
     fi
   else
-    abort " [!] No Internet Detected... [!] "
+    echo "${R}No Emoji List Updates Found${N}"
   fi
-else
-  echo "${R}No Emoji List Updates Found${N}"
-fi
-if [ $currVer3 -gt $instVer3 ] || [ $currVer3 -lt $instVer3 ]; then
-  echo " [-] Checking For Internet Connection... [-] "
-  test_connection3
-  if ! "$CON3"; then
-    test_connection2
-    if ! "$CON2"; then
-      test_connection
+  if [ $currVer3 -gt $instVer3 ] || [ $currVer3 -lt $instVer3 ]; then
+    echo " [-] Checking For Internet Connection... [-] "
+    test_connection3
+    if ! "$CON3"; then
+      test_connection2
+      if ! "$CON2"; then
+        test_connection
+      fi
     fi
-  fi
-  if "$CON1" || "$CON2" || "$CON3"; then
-    rm $FCDIR/user-fonts-list.txt >/dev/null 2>&1
-    mkdir -p $FCDIR/Fonts/User >/dev/null 2>&1
-    curl -k -o $FCDIR/user-fonts-list.txt https://john-fawkes.com/Downloads/userfontlist/user-fonts-list.txt
-    if [ $instVer3 == $currVer3 ]; then
-      echo " [-] User Fonts Lists Downloaded Successfully... [-] "
+    if "$CON1" || "$CON2" || "$CON3"; then
+      rm $FCDIR/user-fonts-list.txt >/dev/null 2>&1
+      mkdir -p $FCDIR/Fonts/User >/dev/null 2>&1
+      curl -k -o $FCDIR/user-fonts-list.txt https://john-fawkes.com/Downloads/userfontlist/user-fonts-list.txt
+      if [ $instVer3 != $currVer3 ]; then
+        echo " [-] User Fonts Lists Downloaded Successfully... [-] "
+      else
+        echo " [!] Error Downloading User Fonts Lists... [!] "
+      fi
     else
-      echo " [!] Error Downloading User Fonts Lists... [!] "
+      abort " [!] No Internet Detected... [!] "
     fi
   else
-    abort " [!] No Internet Detected... [!] "
+    echo "${R}No User List Updates Found${N}"
   fi
-else
-  echo "${R}No User List Updates Found${N}"
-fi
+}
+#######################################################################################################
+#                                        Delete Downloaded Zips                                       #
+#######################################################################################################
+clear_menu() {
+  CHECK=$(du -hs $FCDIR/Fonts | cut -c-4)
+  CHECK2=$(du -hs $FCDIR/Emojis | cut -c-4)
+  echo -e "${G}Would You Like to Delete the Downloaded Font Zips to Save Space?${N}"
+  echo -e "${G}Please Enter (y)es or (n)o...${N}"
+  read -r choice
+  case $choice in
+  y|yes)
+    echo -e "${B}Checking Space...${N}"
+    sleep 3
+    echo "${G}$CHECK${N}"
+    echo "${B}Your Font Zips are Taking Up $CHECK Space${N}"
+    echo "${B}Would You Like to Delete the Font Zips to Save Space?${N}"
+    read -r choice2
+    case $choice2 in
+    y|yes)
+      echo -e "${Y}Deleting Font Zips${N}"
+      rm -rf $FCDIR/Fonts/* >/dev/null 2>&1
+    ;;
+    n|no)
+      echo -e "${R}Not Removing Fonts${N}"
+    ;;
+    esac
+  ;;
+  n|no)
+    echo -e "${C}Not Removing Fonts${N}"
+  ;;
+  *)
+    invaild
+    sleep 1.5
+  ;;
+  esac
+  echo -e "${G}Would You Like to Delete the Downloaded Emoji Zips to Save Space?${N}"
+  echo -e "${G}Please Enter (y)es or (n)o...${N}"
+  read -r choice3
+  case $choice3 in
+  y|yes)
+    echo -e "${B}Checking Space...${N}"
+    sleep 3
+    echo "${G}$CHECK2${N}"
+    echo "${B}Your Emoji Zips are Taking Up $CHECK2 Space${N}"
+    echo "${B}Would You Like to Delete the Emoji Zips to Save Space?${N}"
+    read -r choice4
+    case $choice4 in
+    y|yes)
+      echo -e "${Y}Deleting Emoji Zips${N}"
+      rm -rf $FCDIR/Emojis/* >/dev/null 2>&1
+    ;;
+    n|no)
+      echo -e "${R}Not Removing Emojis${N}"
+    ;;
+    esac
+  ;;
+  n|no)
+    echo -e "${C}Not Removing Emojis${N}"
+  ;;
+  *)
+    invaild
+    sleep 1.5
+  ;;
+  esac
   return_menu
+}
+#######################################################################################################
+#                                             Random                                                  #
+#######################################################################################################
+random_menu() {
+  FRANDOM="$(( ( RANDOM % 228 )  + 1 ))"
+  echo -e "${G}Would You Like to Choose a Random Font?${N}"
+  echo -e "${G}Please Enter (y)es or (n)o...${N}"
+  read -r choice
+  case $choice in
+  y|yes)
+    echo "${G}Random Font selected...${N}"
+    echo "${G}Applying Random Font...${N}"
+    if [ -e $MODPATH/random.txt ]; then
+      truncate -s 0 $MODPATH/random.txt
+    else
+      touch $MODPATH/random.txt
+    fi
+    echo $FRANDOM >> $MODPATH/random.txt
+    choice="$(cat $MODPATH/random.txt)"
+    choice3="$(sed -n ${choice}p $FCDIR/fonts-list.txt)" 
+    choice2="$(echo $choice3 | sed 's/.zip//')"
+#    choice2="$(sed -n ${choice}p $FCDIR/fonts-list.txt | tr -d '.zip')"
+    sleep 2
+    for i in $MODPATH/system/fonts/*Emoji*.ttf; do
+      if [ -e "$i" ]; then
+      mv -f $i $MODPATH
+      fi
+    done
+    rm -rf $MODPATH/system/fonts >/dev/null 2>&1
+    mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
+    [ -e $FCDIR/Fonts/$choice2.zip ] || curl -k -o "$FCDIR/Fonts/$choice2.zip" https://john-fawkes.com/Downloads/$choice2.zip
+    mkdir -p $FCDIR/Fonts/$choice2 >/dev/null 2>&1
+    unzip -o "$FCDIR/Fonts/$choice2.zip" 'system/*' -d $FCDIR/Fonts/$choice2 >&2
+    mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
+    cp -rf $FCDIR/Fonts/$choice2/system/fonts $MODPATH/system
+    for i in $MODPATH/*Emoji*.ttf; do
+      if [ -e "$i" ]; then
+        mv -f $i $MODPATH/system/fonts
+      fi
+    done
+    set_perm_recursive $MODPATH/system/fonts 0 0 0755 0644 >/dev/null 2>&1
+    [ -f $CFONT ] || touch $CFONT
+    truncate -s 0 $CFONT
+    echo -n "CURRENT=$choice2" >>$CFONT
+    if [ -f "$FCDIR/Fonts/$choice2.zip" ] && [ -d $MODPATH/system/fonts ]; then
+      font_reboot_menu
+    else
+      retry
+    fi
+  ;;
+  n|no)
+    return_menu
+  ;;
+  *)
+    invaild
+    sleep 1.5
+  ;;
+  esac
 }

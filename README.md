@@ -2,10 +2,10 @@
 
 <div align="center">
   <!-- Version -->
-    <img src="https://img.shields.io/badge/Version-v2.0-blue.svg?longCache=true&style=popout-square"
+    <img src="https://img.shields.io/badge/Version-v2.5-blue.svg?longCache=true&style=popout-square"
       alt="Version" />
   <!-- Last Updated -->
-    <img src="https://img.shields.io/badge/Updated-August 16, 2019-green.svg?longCache=true&style=flat-square"
+    <img src="https://img.shields.io/badge/Updated-August 27, 2019-green.svg?longCache=true&style=flat-square"
       alt="_time_stamp_" />
 </div>
 
@@ -43,6 +43,19 @@
 - <a href="t.me/botom8">@botom8 Telegram</a>
 
 ## Changelog
+##v2.5 - 8.22.2019 - 8.27.2019
+* Fix issues with no custom fonts or emojis exist and script getting stuck
+* Fix an issue with updating fonts list. Would give a false positive error
+* Fix some issues with backing up fonts and emojis
+* Now Restore Stock Font and/or Emojis works
+* Fix installs on magisk with magisk.img
+* Add Random option. Chossing it will apply a random font
+* Add a delete zips option to save space
+* General Fixes/typos
+* Now fonts/emojis lists update automatically
+* Fix up logging option. Now you can choose option 8 to collect all logs i need to fix bugs and either send me the Fontchanger_logs.zip from internal storage or send me the termbin link on screen
+* Fix some issues with the flag shortcuts
+
 ##v2.4 - 8.21.2019
 * Fix installs without any font or emoji installed first with the backup
 

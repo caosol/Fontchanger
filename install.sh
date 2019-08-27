@@ -142,19 +142,17 @@ if $BOOTMODE; then
   if [ -f "$MOD_VER" ]; then
     if [ $(grep_prop versionCode $MOD_VER) -le $(grep_prop versionCode $TMPDIR/module.prop) ]; then
       ui_print " [!] Current or Older Version Installed [!] "
-      if [ -d /data/adb/modules/Fontchanger/system ]; then
-        ui_print " [-] Backing up and Restoring Current Font and/or Emojis Before Updating [-] "
-        cp -rf /data/adb/modules/Fontchanger/system $MODPATH 2>&1
-        cp -f /data/adb/modules/Fontchanger/*.txt $MODPATH 2>&1
-        cp -f /data/adb/modules/Fontchanger/*.log $MODPATH 2>&1
-        if [ -d $MODPATH/system ]; then
-          ui_print " [-] Backup and Restore Successful [-] "
-        else
-          ui_print " [!] Backup Not Successful [!] "
-          ui_print " [-] You can Manually Backup and Restore By Copying and Pasting "
-          ui_print " /data/adb/modules/Fontchanger/system Folder and all txt files to $MODPATH After this Install "
-          ui_print " and Then Reboot [-] "
-        fi
+      ui_print " [-] Backing up and Restoring Current Font and/or Emojis Before Updating [-] "
+      cp -rf /data/adb/modules/Fontchanger/system $MODPATH 2>&1
+      cp -f /data/adb/modules/Fontchanger/*.txt $MODPATH 2>&1
+      cp -f /data/adb/modules/Fontchanger/*.log $MODPATH 2>&1
+      if [ -d $MODPATH/system ]; then
+        ui_print " [-] Backup and Restore Successful [-] "
+      else
+        ui_print " [!] Backup Not Successful [!] "
+        ui_print " [-] You can Manually Backup and Restore By Copying and Pasting "
+        ui_print " /data/adb/modules/Fontchanger/system Folder and all txt files to $MODPATH After this Install "
+        ui_print " and Then Reboot [-] "
       fi
     fi
   fi
@@ -171,9 +169,10 @@ if $BOOTMODE; then
   fi
   if "$CON1" || "$CON2" || "$CON3"; then
     imageless_magisk && MODULESPATH=$(ls /data/adb/modules/* && ls /data/adb/modules_update/*) || MODULESPATH=$(ls /sbin/.core/img/*)
-    if [ -f "$MODULESPATH/*/system/etc/*fonts*.xml" ] || [ -f "$MODULESPATH/*/system/fonts/*" ] && [ ! -f "$MODULESPATH/Fontchanger/system/fonts/*" ] || [ -f "$MODULESPATH/Fontchanger/system/etc/*font*.xml" ]; then
-			if [ ! -f "$MODULESPATH/*/disable" ]; then
-				NAME=$(get_var $MODULESPATH/*/module.prop "name=")
+  for h in $(ls $MODULESPATH); do
+    if [[ -f $MODULESPATH/$h/system/etc/*fonts*.xml ]] || [[ -f $MODULESPATH/$h/system/fonts/* ]] && [[ ! -f $MODULESPATH/Fontchanger ]]; then
+			if [[ ! -f $MODULESPATH/$h/disable ]]; then
+				NAME=$(get_var $MODULESPATH/$h/module.prop "name=")
 				ui_print " [!] "
 				ui_print " [!] Module editing fonts detected [!] "
 				ui_print " [!] Module - '$NAME'[!] "
@@ -181,6 +180,7 @@ if $BOOTMODE; then
         exxit
       fi
     fi
+  done
     for i in /storage/emulated/0/Fontchanger/*-list.txt; do
       if [ -e $i ]; then
         rm $i 2>&1
@@ -203,7 +203,6 @@ if $BOOTMODE; then
 else
   exxit " [-] TWRP Install NOT Supported. Please Install Booted with Internet Connection... [-] "
 fi
-  imageless_magisk || sed -i "s|MODPATH=/data/adb/modules/$MODID|MODPATH=/sbin/.magisk/img/$MODID|" $TMPDIR/font_changer.sh
   cp -f $TMPDIR/curl-$ARCH32 $MODPATH/curl 2>&1
   cp -f $TMPDIR/sleep-$ARCH32 $MODPATH/sleep 2>&1
   set +euxo pipefail
@@ -226,7 +225,7 @@ set_permissions() {
 
   ui_print " "
   ui_print " [-] After Installing type su then hit enter and type font_changer in terminal [-] "
-  ui_print " [-] Then Choose Option 5 to Read the How-to on How to Set up your Custom Fonts [-] "
+  ui_print " [-] Then Choose Option 6 to Read the How-to on How to Set up your Custom Fonts [-] "
   sleep 3
 #  if [ -f "$MOD_VER" ]; then
 #    if [ $(grep_prop versionCode $MOD_VER) -ge $(grep_prop versionCode $TMPDIR/module.prop) ]; then
@@ -316,6 +315,7 @@ log_handler() {
 }
 
 log_start() {
+  mount -o remount,rw $CACHELOC
 	if [ -f $INSTLOG ]; then
     truncate -s 0 $INSTLOG
   else
