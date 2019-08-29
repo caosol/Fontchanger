@@ -25,14 +25,15 @@ FCDIR=$SDCARD/Fontchanger
 TMPLOG=Fontchanger_logs.log
 TMPLOGLOC=$FCDIR/Fontchanger_logs
 XZLOG=$SDCARD/Fontchanger_logs.zip
-if [ -d /cache ]; then CACHELOC=/cache; else CACHELOC=/data/cache; fi       
+#if [ -d /cache ]; then CACHELOC=/cache; else CACHELOC=/data/cache; fi       
 CFONT=$MODPATH/currentfont.txt
 CEMOJI=$MODPATH/currentemoji.txt
 MIRROR=/sbin/.magisk/mirror
 
 alias curl=$MODPATH/curl
 alias sleep=$MODPATH/sleep
-alias xmlstarlet=$MODPATH/xmlstarlet
+#alias xmlstarlet=$MODPATH/xmlstarlet
+alias zip=$MODPATH/zip
 
 quit() {
   PATH=$OLDPATH
@@ -488,7 +489,7 @@ menu() {
     ;;
     4)
       echo "${BL}[-] User-Submitted Fonts Selected...${N}"
-      user_menu
+      user_font_menu
     ;;
     5)
       echo "${B}[-] Stock Font/Emoji Menu Selected...${N}"

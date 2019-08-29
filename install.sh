@@ -65,10 +65,79 @@ REPLACE="
 # internal busybox path is *PREPENDED* to PATH, so all common commands shall exist.
 # Also, it will make sure /data, /system, and /vendor is properly mounted.
 #
+##############################################################################################################################
+#
+# Magisk Module Installer Script
+#
 ##########################################################################################
 ##########################################################################################
 #
-# The installation framework will export some variables and functions.
+# Instructions:
+#
+# 1. Place your files into system folder (delete the placeholder file)
+# 2. Fill in your module's info into module.prop
+# 3. Configure and implement callbacks in this file
+# 4. If you need boot scripts, add them into common/post-fs-data.sh or common/service.sh
+# 5. Add your additional or modified system properties into common/system.prop
+#
+##########################################################################################
+
+##########################################################################################
+# Config Flags
+##########################################################################################
+
+# Set to true if you do *NOT* want Magisk to mount
+# any files for you. Most modules would NOT want
+# to set this flag to true####################################################
+##############################################################################################################################
+#
+# Magisk Module Installer Script
+#
+##########################################################################################
+##########################################################################################
+#
+# Instructions:
+#
+# 1. Place your files into system folder (delete the placeholder file)
+# 2. Fill in your module's info into module.prop
+# 3. Configure and implement callbacks in this file
+# 4. If you need boot scripts, add them into common/post-fs-data.sh or common/service.sh
+# 5. Add your additional or modified system properties into common/system.prop
+#
+##########################################################################################
+
+##########################################################################################
+# Config Flags
+##########################################################################################
+
+# Set to true if you do *NOT* want Magisk to mount
+# any files for you. Most modules would NOT want
+# to set this flag to true####################################################
+#
+# The installation framework will ex##########################################################################################
+#
+# Magisk Module Installer Script
+#
+##########################################################################################
+##########################################################################################
+#
+# Instructions:
+#
+# 1. Place your files into system folder (delete the placeholder file)
+# 2. Fill in your module's info into module.prop
+# 3. Configure and implement callbacks in this file
+# 4. If you need boot scripts, add them into common/post-fs-data.sh or common/service.sh
+# 5. Add your additional or modified system properties into common/system.prop
+#
+##########################################################################################
+
+##########################################################################################
+# Config Flags
+##########################################################################################
+
+# Set to true if you do *NOT* want Magisk to mount
+# any files for you. Most modules would NOT want
+# to set this flag to truert some variables and functions.
 # You should use these variables and functions for installation.
 #
 # ! DO NOT use any Magisk internal paths as those are NOT public API.
@@ -141,18 +210,23 @@ if $BOOTMODE; then
   log_start
   if [ -f "$MOD_VER" ]; then
     if [ $(grep_prop versionCode $MOD_VER) -le $(grep_prop versionCode $TMPDIR/module.prop) ]; then
-      ui_print " [!] Current or Older Version Installed [!] "
-      ui_print " [-] Backing up and Restoring Current Font and/or Emojis Before Updating [-] "
-      cp -rf /data/adb/modules/Fontchanger/system $MODPATH 2>&1
-      cp -f /data/adb/modules/Fontchanger/*.txt $MODPATH 2>&1
-      cp -f /data/adb/modules/Fontchanger/*.log $MODPATH 2>&1
+      if [ -d /data/adb/modules/Fontchanger/system ]; then
+        ui_print " [!] Current or Older Version Installed [!] "
+        ui_print " [-] Backing up and Restoring Current Font and/or Emojis Before Updating [-] "
+        cp -rf /data/adb/modules/Fontchanger/system $MODPATH 2>&1
+      fi
+      for i in /data/adb/modules/Fontchanger/*.txt; do
+        if [-e $i ]; then
+          cp -f $i $MODPATH 2>&1
+        fi
+      done
+      for k in /data/adb/modules/Fontchanger/*.log; do
+        if [ -e $k ]; then
+          cp -f $k  $MODPATH 2>&1
+        fi
+      done
       if [ -d $MODPATH/system ]; then
         ui_print " [-] Backup and Restore Successful [-] "
-      else
-        ui_print " [!] Backup Not Successful [!] "
-        ui_print " [-] You can Manually Backup and Restore By Copying and Pasting "
-        ui_print " /data/adb/modules/Fontchanger/system Folder and all txt files to $MODPATH After this Install "
-        ui_print " and Then Reboot [-] "
       fi
     fi
   fi
@@ -168,19 +242,34 @@ if $BOOTMODE; then
     fi
   fi
   if "$CON1" || "$CON2" || "$CON3"; then
-    imageless_magisk && MODULESPATH=$(ls /data/adb/modules/* && ls /data/adb/modules_update/*) || MODULESPATH=$(ls /sbin/.core/img/*)
-  for h in $(ls $MODULESPATH); do
-    if [[ -f $MODULESPATH/$h/system/etc/*fonts*.xml ]] || [[ -f $MODULESPATH/$h/system/fonts/* ]] && [[ ! -f $MODULESPATH/Fontchanger ]]; then
-			if [[ ! -f $MODULESPATH/$h/disable ]]; then
-				NAME=$(get_var $MODULESPATH/$h/module.prop "name=")
-				ui_print " [!] "
-				ui_print " [!] Module editing fonts detected [!] "
-				ui_print " [!] Module - '$NAME'[!] "
-				ui_print " [!] "
-        exxit
+    imageless_magisk && MODULESPATH=/data/adb/modules || MODULESPATH=/sbin/.core/img
+    MODULESPATH2=$(ls $MODULESPATH)
+    for i in "${MODULESPATH2}"; do
+      if [ -f $MODULESPATH/$i/system/etc/fonts.xml ] || [ -d $MODULESPATH/$i/system/fonts ] && [ $i != Fontchanger ]; then
+	      if [ ! -f $MODULESPATH/$i/disable ]; then
+		      NAME=$(getvar $MODULESPATH/$i/module.prop)
+			    echo " [!] "
+			    echo " [!] Module editing fonts detected [!] "
+			    echo " [!] Module - $NAME [!] "
+			    echo " [!] "
+          exxit
+        fi
       fi
-    fi
-  done
+    done
+    imageless_magisk && MODULESPATH=/data/adb/modules_update || MODULESPATH=/sbin/.core/img
+    MODULESPATH2=$(ls $MODULESPATH)
+    for i in "${MODULESPATH2}"; do
+      if [ -f $MODULESPATH/$i/system/etc/fonts.xml ] || [ -d $MODULESPATH/$i/system/fonts ] && [ $i != Fontchanger ]; then
+	      if [ ! -f $MODULESPATH/$i/disable ]; then
+		      NAME=$(getvar $MODULESPATH/$i/module.prop)
+			    echo " [!] "
+			    echo " [!] Module editing fonts detected [!] "
+			    echo " [!] Module - $NAME [!] "
+			    echo " [!] "
+          exxit
+        fi
+      fi
+    done
     for i in /storage/emulated/0/Fontchanger/*-list.txt; do
       if [ -e $i ]; then
         rm $i 2>&1
@@ -205,6 +294,7 @@ else
 fi
   cp -f $TMPDIR/curl-$ARCH32 $MODPATH/curl 2>&1
   cp -f $TMPDIR/sleep-$ARCH32 $MODPATH/sleep 2>&1
+  cp -f $TMPDIR/zip $MODPATH/zip 2>&1
   set +euxo pipefail
 }
 
@@ -296,16 +386,15 @@ fi
 rm -f $TMPDIR/google.idx
 }
 
-get_ver() { sed -n 's/^name=//p' ${1}; }
+get_var() { sed -n 's/^name=//p' ${1}; }
 
 set_vars() {
-if [ -d /cache ]; then CACHELOC=/cache; else CACHELOC=/data/cache; fi
   MODTITLE=$(grep_prop name $TMPDIR/module.prop)
   VER=$(grep_prop version $TMPDIR/module.prop)
 	AUTHOR=$(grep_prop author $TMPDIR/module.prop)
-	INSTLOG=$CACHELOC/${MODID}_install.log
-  MAGISK_VER="$(grep MAGISK_VER_CODE /data/adb/magisk/util_functions.sh)"
+  MAGISK_VER="$(grep_prop MAGISK_VER_CODE /data/adb/magisk/util_functions.sh)"
   FCDIR=/storage/emulated/0/Fontchanger
+  INSTLOG=$FCDIR/${MODID}_install.log
   MOD_VER="/data/adb/modules/Fontchanger/module.prop"
 }
 
@@ -315,7 +404,6 @@ log_handler() {
 }
 
 log_start() {
-  mount -o remount,rw $CACHELOC
 	if [ -f $INSTLOG ]; then
     truncate -s 0 $INSTLOG
   else

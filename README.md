@@ -43,6 +43,14 @@
 - <a href="t.me/botom8">@botom8 Telegram</a>
 
 ## Changelog
+##v2.5.1 - 8.28.2019 - 8.29.2019
+* Remove all /cache stuff. Seems some devices cant mount /cache rw
+* Fix code detecting other font modules installed that will cause issues. now will abort if another font or emoji module is installed and not disabled
+* Fix issue in v2.4/2.5 where people couldnt install
+* Add zip binary for logging zip
+* Fix user submitted font menu
+*
+
 ##v2.5 - 8.22.2019 - 8.27.2019
 * Fix issues with no custom fonts or emojis exist and script getting stuck
 * Fix an issue with updating fonts list. Would give a false positive error

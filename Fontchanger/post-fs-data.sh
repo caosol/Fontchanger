@@ -5,8 +5,16 @@
 # This will make sure your module will still work
 # if Magisk change its mount point in the future
 [ -f $PWD/${0##*/} ] && MODPATH=$PWD || MODPATH=${0%/*}
+
+get_file_value() {
+  if [ -f "$1" ]; then
+    grep $2 $1 | sed "s|.*${2}||" | sed 's|\"||g'
+  fi
+} 
+
 MODID=Fontchanger
-MAGISK_VER_CODE="$(grep MAGISK_VER_CODE /data/adb/magisk/util_functions.sh)"
+MAGISK_VER_CODE="$(echo $(get_file_value /data/adb/magisk/util_functions.sh MAGISK_VER_CODE) | sed 's|-.*||')"
+FCDIR=/storage/emulated/0/Fontchanger
 # This script will be executed in post-fs-data mode
 
 if [[ $PATH != *busybox:* ]]; then
@@ -24,9 +32,9 @@ if [[ $PATH != *busybox:* ]]; then
   fi
 fi
 
-if [ -d /cache ]; then CACHELOC=/cache; else CACHELOC=/data/cache; fi
-
-mv $CACHELOC/${MODID}_install.log $MODPATH 2>/dev/null
+if [ -e $FCDIR/${MODID}_install.log ]; then
+  mv $FCDIR/${MODID}_install.log $MODPATH 2>/dev/null
+fi
 
 if ! mount -o remount,rw /sbin 2>/dev/null; then
   cp -a /sbin /dev/.sbin
