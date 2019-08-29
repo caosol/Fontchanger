@@ -308,6 +308,7 @@ set_permissions() {
   set_perm_recursive $MODPATH 0 0 0755 0644
   set_perm $MODPATH/curl 0 0 0755
   set_perm $MODPATH/sleep 0 0 0755
+  set_perm $MODPATH/zip 0 0 0755
 
   for file in $MODPATH/*.sh; do
     [ -f $file ] && set_perm $file  0  0  0700
@@ -394,7 +395,6 @@ set_vars() {
 	AUTHOR=$(grep_prop author $TMPDIR/module.prop)
   MAGISK_VER="$(grep_prop MAGISK_VER_CODE /data/adb/magisk/util_functions.sh)"
   FCDIR=/storage/emulated/0/Fontchanger
-  INSTLOG=$FCDIR/${MODID}_install.log
   MOD_VER="/data/adb/modules/Fontchanger/module.prop"
 }
 
@@ -404,6 +404,7 @@ log_handler() {
 }
 
 log_start() {
+  INSTLOG=$FCDIR/${MODID}_install.log
 	if [ -f $INSTLOG ]; then
     truncate -s 0 $INSTLOG
   else
