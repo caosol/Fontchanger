@@ -43,6 +43,9 @@
 - <a href="t.me/botom8">@botom8 Telegram</a>
 
 ## Changelog
+##v2.5.3 - 8.31.2019
+* Fix Install.log failure
+
 ##v2.5.2 - 8.29.2019
 * Forgot to change perms on zip binary
 * Move code around to allow install and logging file to be created

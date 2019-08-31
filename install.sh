@@ -206,6 +206,9 @@ if $BOOTMODE; then
   trap 'exxit $?' EXIT
 #  unzip -o "$ZIPFILE" 'system/*' -d $MODPATH >&2
   unzip -o "$ZIPFILE" "$MODID/*" -d ${MODPATH%/*}/ >&2
+  mkdir -p /storage/emulated/0/Fontchanger/Fonts/Custom 2>&1
+  mkdir -p /storage/emulated/0/Fontchanger/Fonts/User 2>&1
+  mkdir -p /storage/emulated/0/Fontchanger/Emojis/Custom 2>&1
   set_vars
   log_start
   if [ -f "$MOD_VER" ]; then
@@ -275,9 +278,6 @@ if $BOOTMODE; then
         rm $i 2>&1
       fi
     done
-    mkdir -p /storage/emulated/0/Fontchanger/Fonts/Custom 2>&1
-    mkdir -p /storage/emulated/0/Fontchanger/Fonts/User 2>&1
-    mkdir -p /storage/emulated/0/Fontchanger/Emojis/Custom 2>&1
     $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/fonts-list.txt https://john-fawkes.com/Downloads/fontlist/fonts-list.txt
     $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/user-fonts-list.txt https://john-fawkes.com/Downloads/userfontlist/user-fonts-list.txt
     $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/emojis-list.txt https://john-fawkes.com/Downloads/emojilist/emojis-list.txt
