@@ -54,11 +54,13 @@ else
 fi
 
 # Load Needed Functions
-if [ -f $MODPATH/${MODID}-functions.sh ]; then
+if [ -e /sbin/${MODID}-functions ]; then
+  . /sbin/${MODID}-functions
+elif [ -e $MODPATH/${MODID}-functions.sh ]; then
   . $MODPATH/${MODID}-functions.sh
 else
   echo "! Can't find functions script! Aborting!"; exit 1
-fi
+fi  
 
 #=========================== Set Log Files
 #mount -o remount,rw $CACHELOC 2>/dev/null
@@ -321,22 +323,21 @@ test_connection2() {
   *) ui_print " [!] The network is down or very slow [!] "
     NCON2=true
     ;;
-esac
+  esac
 }
 
 test_connection3() {
   wget -q --tries=5 --timeout=10 http://www.google.com -O $MODPATH/google.idx >/dev/null 2>&1
-if [ ! -s $MODPATH/google.idx ]
-then
+  if [ ! -s $MODPATH/google.idx ]; then
     ui_print " [!] Not Connected... [!] "
     NCON3=true
-else
+  else
     ui_print " [-] Connected..! [-] "
-  CON1=false
-  CON2=false
-  CON3=true
-fi
-rm -f $MODPATH/google.idx
+    CON1=false
+    CON2=false
+    CON3=true
+  fi
+  rm -f $MODPATH/google.idx
 }
 
 # Log files will be uploaded to termbin.com

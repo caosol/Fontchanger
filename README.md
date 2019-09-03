@@ -2,10 +2,10 @@
 
 <div align="center">
   <!-- Version -->
-    <img src="https://img.shields.io/badge/Version-v2.5.2-blue.svg?longCache=true&style=popout-square"
+    <img src="https://img.shields.io/badge/Version-v2.5.4-blue.svg?longCache=true&style=popout-square"
       alt="Version" />
   <!-- Last Updated -->
-    <img src="https://img.shields.io/badge/Updated-August 29, 2019-green.svg?longCache=true&style=flat-square"
+    <img src="https://img.shields.io/badge/Updated-September 3, 2019-green.svg?longCache=true&style=flat-square"
       alt="_time_stamp_" />
 </div>
 
@@ -43,6 +43,11 @@
 - <a href="t.me/botom8">@botom8 Telegram</a>
 
 ## Changelog
+##v2.5.4 - 9.3.2019
+* Hopefully fix user submitted and issue of having multiple custom font folders
+* Fix invalid function. Somehow got renamed
+* Hopefully fix issue of functions script not found error for a few of you on magisk 18
+
 ##v2.5.3 - 8.31.2019
 * Fix Install.log failure
 
@@ -58,12 +63,12 @@
 * Fix user submitted font menu
 
 ##v2.5 - 8.22.2019 - 8.27.2019
-* Fix issues with no custom fonts or emojis exist and script getting stuck
-* Fix an issue with updating fonts list. Would give a false positive error
-* Fix some issues with backing up fonts and emojis
-* Now Restore Stock Font and/or Emojis works
-* Fix installs on magisk with magisk.img
-* Add Random option. Chossing it will apply a random font
+* Fix issues with no custom fonts or emojis exist and script getting stuckAugust 29
+* Fix an issue wiAugust 29th updating fonts list. Would give a false positive errorAugust 29
+* Fix some issuesAugust 29 with backing up fonts and emojis
+* Now Restore StoAugust 29ck Font and/or Emojis works
+* Fix installs onAugust 29 magisk with magisk.img
+* Add Random optiAugust 29on. Chossing it will apply a random font
 * Add a delete zips option to save space
 * General Fixes/typos
 * Now fonts/emojis lists update automatically

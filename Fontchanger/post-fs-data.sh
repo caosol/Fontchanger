@@ -41,12 +41,12 @@ if ! mount -o remount,rw /sbin 2>/dev/null; then
   mount -o bind,rw /dev/.sbin /sbin
 fi
 mkdir -p /sbin/.$MODID
-[ -h /sbin/.$MODID/$MODID ] || rm -rf /sbin/.$MODID/$MODID 2>/dev/null
-if [ ${MAGISK_VER_CODE} -gt 18100 ]; then
-  ln -fs $MODPATH /sbin/.$MODID/$MODID
-else
-  cp -a $MODPATH /sbin/.$MODID/$MODID
-fi
+[ -h /sbin/.$MODID/$MODID ] && rm -rf /sbin/.$MODID/$MODID 2>/dev/null \
+  || rm -rf /sbin/.$MODID/$MODID 2>/dev/null
+[ ${MAGISK_VER_CODE} -gt 18100 ] \
+  && ln -fs $MODPATH /sbin/.$MODID/$MODID \
+  || cp -a $MODPATH /sbin/.$MODID/$MODID
+ln -fs $MODPATH /sbin/.$MODID/$MODID
 ln -fs /sbin/.$MODID/$MODID/font_changer.sh /sbin/font_changer
 ln -fs /sbin/.$MODID/$MODID/${MODID}-functions.sh /sbin/${MODID}-functions
 

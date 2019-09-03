@@ -1,4 +1,4 @@
-invainvaild() {
+invalid() {
   echo -e "${R}Invaild Option...${N}"
   clear
 }
@@ -471,16 +471,18 @@ list_custom_fonts() {
   num=1
   rm $MODPATH/customfontlist.txt >/dev/null 2>&1
   touch $MODPATH/customfontlist.txt >/dev/null 2>&1
-  for i in $(ls "$FCDIR/Fonts/Custom" | sort); do
-    sleep 0.1
-    echo -e "[$num] $i" >> $MODPATH/customfontlist.txt && echo "${W}[$num]${N} ${B}$i${N}"
-    num=$((num + 1))
+  for i in $(find "$PWD/" -type d | sed 's#.*/##'); do
+      sleep 0.1
+      echo -e "[$num] $i" >> $MODPATH/customfontlist.txt && echo "${W}[$num]${N} ${B}$i${N}"
+      num=$((num + 1))
   done
 }
 
 custom_menu() {
-  if [ $(ls -A "$FCDIR/Fonts/Custom") ]; then
+  if $(ls -A "$FCDIR/Fonts/Custom"); then
+    cd $FCDIR/Fonts/Custom
     list_custom_fonts
+    cd $MODPATH
     wrong=$(cat $MODPATH/customfontlist.txt | wc -l)
     echo -e "${G}Please Choose a Font to Apply. Enter the Corresponding Number...${N}"
     read -r choice
@@ -644,12 +646,11 @@ apply_user_font() {
     fi
   done
   rm -rf $MODPATH/system/fonts >/dev/null 2>&1
-  mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
   [ -e $FCDIR/Fonts/User/$choice2.zip ] || curl -k -o "$FCDIR/Fonts/User/$choice2.zip" https://john-fawkes.com/Downloads/User/$choice2.zip
   mkdir -p $FCDIR/Fonts/User/$choice2 >/dev/null 2>&1
-  unzip -o "$FCDIR/Fonts/User/$choice2.zip" 'system/*' -d $FCDIR/Fonts/$choice2 >&2
+  unzip -o "$FCDIR/Fonts/User/$choice2.zip" -d $FCDIR/Fonts/$choice2 >&2
   mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
-  cp -rf $FCDIR/Fonts/User/$choice2/system/fonts $MODPATH/system
+  cp -rf $FCDIR/Fonts/User/$choice2/* $MODPATH/system/fonts
   for i in $MODPATH/*Emoji*.ttf; do
     if [ -e "$i" ]; then
       mv -f $i $MODPATH/system/fonts
@@ -679,7 +680,7 @@ list_user_fonts() {
 
 user_font_menu() {
   clear
-  list_fonts
+  list_user_fonts
   clear
   echo "$div"
   title_div "User-Submitted Fonts"
