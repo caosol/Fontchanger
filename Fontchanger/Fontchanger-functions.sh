@@ -650,7 +650,9 @@ apply_user_font() {
   mkdir -p $FCDIR/Fonts/User/$choice2 >/dev/null 2>&1
   unzip -o "$FCDIR/Fonts/User/$choice2.zip" -d $FCDIR/Fonts/$choice2 >&2
   mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
-  cp -rf $FCDIR/Fonts/User/$choice2/* $MODPATH/system/fonts
+  for j in $FCDIR/Fonts/User/$choice2/*; do
+    cp $j $MODPATH/system/fonts
+  done
   for i in $MODPATH/*Emoji*.ttf; do
     if [ -e "$i" ]; then
       mv -f $i $MODPATH/system/fonts

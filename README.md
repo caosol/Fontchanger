@@ -43,6 +43,9 @@
 - <a href="t.me/botom8">@botom8 Telegram</a>
 
 ## Changelog
+##v2.5.4-1 - 9.3.2019
+* Fix user submmitted fonrs not applying correctly
+
 ##v2.5.4 - 9.3.2019
 * Hopefully fix user submitted and issue of having multiple custom font folders
 * Fix invalid function. Somehow got renamed
