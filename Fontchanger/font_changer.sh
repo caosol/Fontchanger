@@ -4,6 +4,7 @@
 # Modified by @JohnFawkes - Telegram
 # Help from @Zackptg5
 # Variables
+
 get_file_value() {
   if [ -f "$1" ]; then
     grep $2 $1 | sed "s|.*${2}||" | sed 's|\"||g'
@@ -61,6 +62,25 @@ elif [ -e $MODPATH/${MODID}-functions.sh ]; then
 else
   echo "! Can't find functions script! Aborting!"; exit 1
 fi  
+
+MODULESPATH=/data/adb/modules
+imageless_magisk || MODULESPATH=/sbin/.core/img
+setabort=0
+for i in "$MODULESPATH"*/*; do
+  if [[ $i != *Fontchanger ]] && [ ! -f $i/disable ] && [ -d $i/system/fonts ]; then
+    NAME=$(get_var $i/module.prop)
+    ui_print " [!] "
+    ui_print " [!] Module editing fonts detected [!] "
+    ui_print " [!] Module - $NAME [!] "
+    ui_print " [!] "
+    setabort=1
+  fi
+done
+if [[ $setabort == 1 ]]; then
+  ui_print " [!] Remove all Conflicting Font Modules before Continuing [!] "
+  abort
+fi
+
 
 #=========================== Set Log Files
 #mount -o remount,rw $CACHELOC 2>/dev/null
@@ -410,330 +430,119 @@ mod_head() {
 #                                        MENU                                                         #
 #######################################################################################################
 menu() {
-  echo "$div"
-  pcenter "${G} ___________________    ___________________________ ${N}"
-  pcenter "${G} \_   _____/\_____  \   \      \__    ___/   _____/ ${N}"
-  pcenter "${G}  |    __)   /   |   \  /   |   \|    |  \_____  \  ${N}"
-  pcenter "${G}  |     \   /    |    \/    |    \    |  /        \ ${N}"
-  pcenter "${G}  \___  /   \_______  /\____|__  /____| /_______  / ${N}"
-  pcenter "${G}      \/            \/         \/               \/  ${N}"
-  echo " "
-  echo "$div"
-  mod_head
-  echo " "
-  pcenter "${B}Welcome to Font Changer!${N}"
-  echo " "
-  echo -e "${Y}[!] Updating Font/Emoji/User Fonts Lists [!]${N}"
-  echo " "
-  echo -e "${Y}[!] Please Wait For the Update to Finish [!]${N}"
-  update_lists
-  if [ -e $MODPATH/userfontlist.txt ] || [ -e $MODPATH/fontlist.txt ] || [ -e $MODPATH/customfontlist.txt ] || [ -e $MODPATH/customemojilist.txt ] || [ -e $MODPATH/emojilist.txt ]; then
-    echo -e "${R}IF THIS IS YOUR FIRST TIME PLEASE CHOOSE OPTION 6 TO SEE HOW TO SET UP YOUR CUSTOM FONTS!${N}"
+  choice=""
+  fontchoice=""
+
+  while [ "$choice" != "q" ]; do
+    echo "$div"
+    pcenter "${G} ___________________    ___________________________ ${N}"
+    pcenter "${G} \_   _____/\_____  \   \      \__    ___/   _____/ ${N}"
+    pcenter "${G}  |    __)   /   |   \  /   |   \|    |  \_____  \  ${N}"
+    pcenter "${G}  |     \   /    |    \/    |    \    |  /        \ ${N}"
+    pcenter "${G}  \___  /   \_______  /\____|__  /____| /_______  / ${N}"
+    pcenter "${G}      \/            \/         \/               \/  ${N}"
     echo " "
-  fi
-  FONT=$(get_file_value $CFONT CURRENT=)
-  EMOJI=$(get_file_value $CEMOJI CURRENT=)
-  if [ $FONT ] ; then
-    echo -e "${Y}[=] Current Font is $FONT [=]${N}"
-  else
-    echo -e "${R}[!] No Font Applied Yet [!]${N}"
-  fi
-  if [ $EMOJI ]; then
-    echo -e "${Y}[=] Current Emoji is $EMOJI [=]${N}"
-  else
-    echo -e "${R}[!] No Emoji Applied Yet [!]${N}"
-  fi
-  echo -e "${B}[-] Select an Option...${N}"
-  echo " "
-  sleep 1
-  echo -e "${W}[0]${N} ${G} - I'm Feeling Lucky? Have the Script Pick a Random Font to Apply${N}"
-  echo " "
-  echo -e "${W}[1]${N} ${G} - Choose From Over 200 Fonts${N}"
-  echo " "
-  echo -e "${W}[2]${N} ${G} - List Fonts in Folder (Custom)${N}"
-  echo " "
-  echo -e "${W}[3]${N} ${G} - Change Emojis${N}"
-  echo " "
-  echo -e "${W}[4]${N} ${G} - Choose From User-Submitted Custom Fonts${N}"
-  echo " "
-  echo -e "${W}[5]${N} ${G} - Change to Stock Font or Emoji${N}"
-  echo " "
-  echo -e "${W}[6]${N} ${G} - How to Set Up the Font Folder${N}"
-  echo " "
-  echo -e "${W}[7]${N} ${G} - Help (Options)${N}"
-  echo " "
-  echo -e "${W}[8]${N} ${G} - Take Logs${N}"
-  echo " "
-  echo -e "${W}[9]${N} ${G} - Delete Downloaded Zips to Clear Space${N}"
-  echo " "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-  echo -e "${R}[Q] - Quit${N}"
-  echo " "
-  echo -n "${B}[CHOOSE] : ${N}"
-  echo " "
-  read -r choice
-    case $choice in
-    0)
-      echo "${B}[-] Random Font Menu Selected...${N}"
-      random_menu
-    ;;
-    1)
-      echo "${Y}[-] Font Chooser Menu Selected...${N}"
-      font_menu
-    ;;
-    2)
-      echo "${G}[-] Custom Font Menu Selected...${N}"
-      custom_menu
-    ;;
-    3)
-      echo "${R}[-] Emoji Menu Selected...${N}"
-      emoji_menu
-    ;;
-    4)
-      echo "${BL}[-] User-Submitted Fonts Selected...${N}"
-      user_font_menu
-    ;;
-    5)
-      echo "${B}[-] Stock Font/Emoji Menu Selected...${N}"
-      default_menu
-    ;;
-    6)
-      echo "${C}[-] Custom Setup Help Selected...${N}"
-      help_custom
-    ;;
-    7)
-      echo "${B}[-] Option Help Selected...${N}"
-      help
-    ;;
-    8)
-      log_print "${G}[-] Collecting logs and creating archive...${N}"
-      magisk_version
-      collect_logs
-      upload_logs
-      quit
-    ;;
-    9)
-      echo "${G}[-] Clear Downloaded Zips Selected...${N}"
-      clear_menu
-    ;;
-    q|Q)
-      echo "${R}[-] Quiting...${N}"
-      clear
-      quit
-    ;;
-    *)
-      echo "${Y}[!] Item Not Available! Try Again [!]${N}"
-      sleep 1.5
-      clear
-    ;;
-  esac
-}
-#######################################################################################################
-#                                        SHORTCUTS                                                    #
-#######################################################################################################
-apply_font_shortcut() {
-  echo -e "${B}Applying Font. Please Wait...${N}"
-  sleep 2
-  choice2="$(grep -w $i $MODPATH/fontlist.txt | tr -d '[0-9]' | tr -d ' ')"
-  if [ -f "$MODPATH/system/fonts/*Emoji*.ttf" ]; then
-    for i in $MODPATH/system/fonts/*Emoji*.ttf; do
-      mv -f $i $MODPATH
-    done
-  fi
-  rm -rf $MODPATH/system/fonts > /dev/null 2>&1
-  mkdir -p $FCDIR/Fonts/$choice2
-  [ -e $FCDIR/Fonts/$choice2.zip ] || curl -k -o "$FCDIR/Fonts/$choice2.zip" https://john-fawkes.com/Downloads/$choice2.zip
-  unzip -o "$FCDIR/Fonts/$choice2.zip" 'system/*' -d $FCDIR/Fonts/$choice2 >&2 
-  mkdir -p $MODPATH/system/fonts
-  if [ -f "$MODPATH/*Emoji*.ttf" ]; then
-    for i in $MODPATH/*Emoji*.ttf; do
-      mv -f $i $MODPATH/system/fonts
-    done
-  fi
-  cp -rf $FCDIR/Fonts/$choice2/system/fonts/ $MODPATH/system/fonts
-  set_perm_recursive $MODPATH/system/fonts 0 0 0755 0644 > /dev/null 2>&1
-  truncate -s 0 $CFONT
-  echo -n "CURRENT=$choice2" >> $CFONT
-  rm -r $FCDIR/Fonts/$choice2
-  if [ -d "$FCDIR/Fonts/$choice2.zip" ] && [ -d $MODPATH/system/fonts ]; then
-    font_reboot_menu
-  else
-    echo -e "${R}[!] FONT WAS NOT APPLIED [!]${N}"
-    echo -e "${R} PLEASE TRY AGAIN${N}"
-    exit
-  fi
-}
-
-apply_custom_font_shortcut() {
-  choice2="$(grep -w $i $MODPATH/customfontlist.txt | tr -d '[0-9]' | tr -d ' ')"
-  cusfont=$(cat $MODPATH/listforcustom.txt)
-  if [ -e $FCDIR/dump.txt ]; then
-    truncate -s 0 $FCDIR/dump.txt
-  else
-    touch $FCDIR/dump.txt
-  fi
-  for i in ${cusfont[@]} ; do
-    if [ -e $FCDIR/Fonts/Custom/$choice2/$i ]; then
-      echo "$i found" >> $FCDIR/dump.txt && echo "${B}$i Found${N}"
-    fi
-    if [ ! -e $FCDIR/Fonts/Custom/$choice2/$i ]; then
-      echo "$i NOT FOUND" >> $FCDIR/dump.txt && echo "${R}$i NOT FOUND${N}"
-    fi
-  done
-  if grep -wq "$i NOT FOUND" $FCDIR/dump.txt; then
-    abort "${R}Script Will Not Continue Until All ttf Files Exist!${N}"
-  fi
-  PASSED=true
-    for i in $MODPATH/system/fonts/*Emoji*.ttf; do
-      if [ -e $i ]; then
-        mv -f $i $MODPATH
-      fi
-    done
-  rm -rf $MODPATH/system/fonts >/dev/null 2>&1
-  mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
-    for i in $MODPATH/*Emoji*.ttf; do
-      if [ -e $i ]; then
-        mv -f $i $MODPATH/system/fonts
-      fi
-    done
-  cp -f $FCDIR/Fonts/Custom/$choice2/* $MODPATH/system/fonts/
-  set_perm_recursive $MODPATH/system/fonts 0 0 0755 0644 >/dev/null 2>&1
-  [ -f $CFONT ] || touch $CFONT
-  truncate -s 0 $CFONT
-  echo -n "CURRENT=$choice2" >> $CFONT
-  if [ $PASSED == true ] && [ -d $MODPATH/system/fonts ]; then
-    font_reboot_menu
-  else
-    echo -e "${R}[!] FONT WAS NOT APPLIED [!]${N}"
-    echo -e "${R} PLEASE TRY AGAIN${N}"
-    exit
-  fi
-}
-
-random_shortcut() {
-  FRANDOM="$(( ( RANDOM % 228 )  + 1 ))"
-  echo "${G}Random Font selected...${N}"
-  echo "${G}Applying Random Font...${N}"
-  if [ -e $MODPATH/random.txt ]; then
-    truncate -s 0 $MODPATH/random.txt
-  else
-    touch $MODPATH/random.txt
-  fi
-  echo $FRANDOM >> $MODPATH/random.txt
-  choice="$(cat $MODPATH/random.txt)"
-  choice3="$(sed -n ${choice}p $FCDIR/fonts-list.txt)" 
-  choice2="$(echo $choice3 | sed 's/.zip//')"
-#    choice2="$(sed -n ${choice}p $FCDIR/fonts-list.txt | tr -d '.zip')"
-  sleep 2
-  for i in $MODPATH/system/fonts/*Emoji*.ttf; do
-    if [ -e "$i" ]; then
-      mv -f $i $MODPATH
-    fi
-  done
-  rm -rf $MODPATH/system/fonts >/dev/null 2>&1
-  mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
-  [ -e $FCDIR/Fonts/$choice2.zip ] || curl -k -o "$FCDIR/Fonts/$choice2.zip" https://john-fawkes.com/Downloads/$choice2.zip
-  mkdir -p $FCDIR/Fonts/$choice2 >/dev/null 2>&1
-  unzip -o "$FCDIR/Fonts/$choice2.zip" 'system/*' -d $FCDIR/Fonts/$choice2 >&2
-  mkdir -p $MODPATH/system/fonts >/dev/null 2>&1
-  cp -rf $FCDIR/Fonts/$choice2/system/fonts $MODPATH/system
-  for i in $MODPATH/*Emoji*.ttf; do
-    if [ -e "$i" ]; then
-      mv -f $i $MODPATH/system/fonts
-    fi
-  done
-  set_perm_recursive $MODPATH/system/fonts 0 0 0755 0644 >/dev/null 2>&1
-  [ -f $CFONT ] || touch $CFONT
-  truncate -s 0 $CFONT
-  echo -n "CURRENT=$choice2" >>$CFONT
-  if [ -f "$FCDIR/Fonts/$choice2.zip" ] && [ -d $MODPATH/system/fonts ]; then
-    font_reboot_menu
-  else
-    echo -e "${R}[!] FONT WAS NOT APPLIED [!]${N}"
-    echo -e "${R} PLEASE TRY AGAIN${N}"
-    exit
-  fi
-}
-
-clear_shortcut() {
-  CHECK=$(du -hs $FCDIR/Fonts | cut -c-4)
-  CHECK2=$(du -hs $FCDIR/Emojis | cut -c-4)
-  echo -e "Checking Space..."
-  sleep 3
-  echo "$CHECK"
-  echo "Your Font Zips are Taking Up $CHECK Space"
-  echo -e "Deleting Font Zips"
-  rm -rf $FCDIR/Fonts/* >/dev/null 2>&1
-  echo -e "Checking Emoji Space..."
-  sleep 3
-  echo "$CHECK2"
-  echo "Your Emoji Zips are Taking Up $CHECK2 Space"
-  echo "Deleting Emoji Zips"
-  rm -rf $FCDIR/Emojis/* >/dev/null 2>&1
-  echo "Zip Space Cleared"
-  exit
-}
-
-case "$1" in
--a|--font)
-  for i in "$@"; do
-    apply_font_shortcut $i
-	  echo "$div"
-	done
-	exit
-;;
--c|--cemoji)
-  for i in "$@"; do
-    apply_custom_emoji $i
     echo "$div"
+    mod_head
+    echo " "
+    pcenter "${B}Welcome to Font Changer!${N}"
+    echo " "
+    echo -e "${G}Would You like to Update the Font List?${N}"
+    echo " "
+    echo -e "${G}Enter y or n${N}"
+    echo " "
+    echo -n "${B}[CHOOSE] : ${N}"
+    echo " "
+    read -r fontchoice
+    case $(echo $choice | tr '[:upper:]' '[:lower:]') in
+      y)  
+        echo -e "${Y}[!] Updating Font/Emoji/User Fonts Lists [!]${N}"
+        echo " "
+        echo -e "${Y}[!] Please Wait For the Update to Finish [!]${N}"
+        update_lists
+      ;;
+      n)
+        echo -e "${R}Skipping Font List Updating...${N}"
+      ;;
+    esac
+    FONT=$(get_file_value $CFONT CURRENT=)
+    EMOJI=$(get_file_value $CEMOJI CURRENT=)
+    if [ $FONT ]; then
+      echo -e "${Y}[=] Current Font is $FONT [=]${N}"
+    else
+      echo -e "${R}[!] No Font Applied Yet [!]${N}"
+    fi
+    if [ $EMOJI ]; then
+      echo -e "${Y}[=] Current Emoji is $EMOJI [=]${N}"
+    else
+      echo -e "${R}[!] No Emoji Applied Yet [!]${N}"
+    fi
+    echo -e "${B}[-] Select an Option...${N}"
+    echo " "
+    sleep 1
+    echo -e "${W}[1]${N} ${G} - Fonts${N}"
+    echo " "
+    echo -e "${W}[2]${N} ${G} - Emojis${N}"
+    echo " "
+    echo -e "${W}[3]${N} ${G} - Change to Stock Font or Emoji${N}"
+    echo " "
+    echo -e "${W}[4]${N} ${G} - Help${N}"
+    echo " "
+    echo -e "${W}[5]${N} ${G} - Take Logs${N}"
+    echo " "
+    echo -e "${W}[6]${N} ${G} - Delete Downloaded Zips to Clear Space${N}"
+    echo " "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+    echo -e "${R}[Q] - Quit${N}"
+    echo " "
+    echo -n "${B}[CHOOSE] : ${N}"
+    echo " "
+    read -r choice
+    case $(echo $choice | tr '[:upper:]' '[:lower:]') in
+      1)
+        echo "${Y}[-] Font Chooser Menu Selected...${N}"
+        choose_font_menu
+        break
+      ;;
+      2)
+        echo "${R}[-] Emoji Menu Selected...${N}"
+        choose_emoji_menu
+        break
+      ;;
+      3)
+        echo "${B}[-] Stock Font/Emoji Menu Selected...${N}"
+        default_menu
+        break
+      ;;
+      4)
+        echo "${B}[-] Option Help Selected...${N}"
+        choose_help_menu
+      ;;
+      5)
+        log_print "${G}[-] Collecting logs and creating archive...${N}"
+        magisk_version
+        collect_logs
+        upload_logs
+        quit
+      ;;
+      6)
+        echo "${G}[-] Clear Downloaded Zips Selected...${N}"
+        clear_menu
+        break
+      ;;
+      q)
+        echo "${R}[-] Quiting...${N}"
+        clear
+        quit
+      ;;
+      *)
+        echo "${Y}[!] Item Not Available! Try Again [!]${N}"
+        sleep 1.5
+        clear
+      ;;
+    esac
   done
-  exit
-;;
--d|--cfont)
-  for i in "$@"; do
-    apply_custom_font_shortcut $i
-    echo "$div"
-  done
-  exit
-;;
--e|--emoji)
-  for i in "$@"; do
-    apply_emoji $i
-    echo "$div"
-  done
-  exit
-;;
--h|--help)
-  help
-;;
--l|--listc)
-  custom_font_menu
-  exit
-;;
--m|--list)
-  font_menu
-;;
--r|--random)
-  random_shortcut
-;;
--s|--current)
-  FONT=$(get_file_value $CFONT CURRENT=)
-  if [ $FONT ]; then
-    echo "${Y}[=] Current Font is $FONT [=]${N}"
-  else
-    echo "${R}[!] No Font Applied Yet [!]${N}"
-  fi
-	echo "$div"
-  if [ $EMOJI ]; then
-    echo -e "${Y}[=] Current Emoji is $EMOJI [=]${N}"
-  else
-    echo -e "${R}[!] No Emoji Applied Yet [!]${N}"
-  fi
-	exit
-;;
--z|--delete)
-  clear_shortcut
-;;
-esac
+}
+
 
 menu
 

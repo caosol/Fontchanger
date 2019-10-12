@@ -65,79 +65,10 @@ REPLACE="
 # internal busybox path is *PREPENDED* to PATH, so all common commands shall exist.
 # Also, it will make sure /data, /system, and /vendor is properly mounted.
 #
-##############################################################################################################################
-#
-# Magisk Module Installer Script
-#
 ##########################################################################################
 ##########################################################################################
 #
-# Instructions:
-#
-# 1. Place your files into system folder (delete the placeholder file)
-# 2. Fill in your module's info into module.prop
-# 3. Configure and implement callbacks in this file
-# 4. If you need boot scripts, add them into common/post-fs-data.sh or common/service.sh
-# 5. Add your additional or modified system properties into common/system.prop
-#
-##########################################################################################
-
-##########################################################################################
-# Config Flags
-##########################################################################################
-
-# Set to true if you do *NOT* want Magisk to mount
-# any files for you. Most modules would NOT want
-# to set this flag to true####################################################
-##############################################################################################################################
-#
-# Magisk Module Installer Script
-#
-##########################################################################################
-##########################################################################################
-#
-# Instructions:
-#
-# 1. Place your files into system folder (delete the placeholder file)
-# 2. Fill in your module's info into module.prop
-# 3. Configure and implement callbacks in this file
-# 4. If you need boot scripts, add them into common/post-fs-data.sh or common/service.sh
-# 5. Add your additional or modified system properties into common/system.prop
-#
-##########################################################################################
-
-##########################################################################################
-# Config Flags
-##########################################################################################
-
-# Set to true if you do *NOT* want Magisk to mount
-# any files for you. Most modules would NOT want
-# to set this flag to true####################################################
-#
-# The installation framework will ex##########################################################################################
-#
-# Magisk Module Installer Script
-#
-##########################################################################################
-##########################################################################################
-#
-# Instructions:
-#
-# 1. Place your files into system folder (delete the placeholder file)
-# 2. Fill in your module's info into module.prop
-# 3. Configure and implement callbacks in this file
-# 4. If you need boot scripts, add them into common/post-fs-data.sh or common/service.sh
-# 5. Add your additional or modified system properties into common/system.prop
-#
-##########################################################################################
-
-##########################################################################################
-# Config Flags
-##########################################################################################
-
-# Set to true if you do *NOT* want Magisk to mount
-# any files for you. Most modules would NOT want
-# to set this flag to truert some variables and functions.
+# The installation framework will export some variables and functions.
 # You should use these variables and functions for installation.
 #
 # ! DO NOT use any Magisk internal paths as those are NOT public API.
@@ -200,101 +131,90 @@ print_modname() {
 on_install() {
   # The following is the default implementation: extract $ZIPFILE/system to $MODPATH
   # Extend/change the logic to whatever you want
-if $BOOTMODE; then
- ui_print " [-] Extracting module files [-] "
+  unzip -o "$ZIPFILE" 'sh_install.sh' -d $TMPDIR >&2
   set -euxo pipefail
   trap 'exxit $?' EXIT
-#  unzip -o "$ZIPFILE" 'system/*' -d $MODPATH >&2
-  unzip -o "$ZIPFILE" "$MODID/*" -d ${MODPATH%/*}/ >&2
-  mkdir -p /storage/emulated/0/Fontchanger/Fonts/Custom 2>&1
-  mkdir -p /storage/emulated/0/Fontchanger/Fonts/User 2>&1
-  mkdir -p /storage/emulated/0/Fontchanger/Emojis/Custom 2>&1
-  set_vars
-  log_start
-  if [ -f "$MOD_VER" ]; then
-    if [ $(grep_prop versionCode $MOD_VER) -le $(grep_prop versionCode $TMPDIR/module.prop) ]; then
-      if [ -d /data/adb/modules/Fontchanger/system ]; then
-        ui_print " [!] Current or Older Version Installed [!] "
-        ui_print " [-] Backing up and Restoring Current Font and/or Emojis Before Updating [-] "
-        cp -rf /data/adb/modules/Fontchanger/system $MODPATH 2>&1
+  if $BOOTMODE; then
+    ui_print " Checking for any other font modules installed... "
+    MODULESPATH=/data/adb/modules
+    imageless_magisk || MODULESPATH=/sbin/.core/img
+    for i in "$MODULESPATH"*/*; do
+      if [[ $i != *Fontchanger ]] && [ ! -f $i/disable ] && [ -d $i/system/fonts ]; then
+        NAME=$(get_var $i/module.prop)
+        ui_print " [!] "
+        ui_print " [!] Module editing fonts detected [!] "
+        ui_print " [!] Module - $NAME [!] "
+        ui_print " [!] "
+        exxit
       fi
-      for i in /data/adb/modules/Fontchanger/*.txt; do
-        if [-e $i ]; then
-          cp -f $i $MODPATH 2>&1
+    done
+    ui_print " [-] Extracting module files [-] "
+#    unzip -o "$ZIPFILE" 'system/*' -d $MODPATH >&2
+    unzip -o "$ZIPFILE" "$MODID/*" -d ${MODPATH%/*}/ >&2
+    unzip -o "$ZIPFILE" '*.md' -d $TMPDIR >&2
+    mkdir -p /storage/emulated/0/Fontchanger/Fonts/Custom 2>&1
+    mkdir -p /storage/emulated/0/Fontchanger/Fonts/User 2>&1
+    mkdir -p /storage/emulated/0/Fontchanger/Emojis/Custom 2>&1
+    set_vars
+    log_start
+    if [ -f "$MOD_VER" ]; then
+      if [ $(grep_prop versionCode $MOD_VER) -le $(grep_prop versionCode $TMPDIR/module.prop) ]; then
+        if [ -d /data/adb/modules/Fontchanger/system ]; then
+          ui_print " [!] Current or Older Version Installed [!] "
+          ui_print " [-] Backing up and Restoring Current Font and/or Emojis Before Updating [-] "
+          cp -rf /data/adb/modules/Fontchanger/system $MODPATH 2>&1
         fi
-      done
-      for k in /data/adb/modules/Fontchanger/*.log; do
-        if [ -e $k ]; then
-          cp -f $k  $MODPATH 2>&1
+        for i in /data/adb/modules/Fontchanger/*.txt; do
+          if [ -e $i ]; then
+            cp -f $i $MODPATH 2>&1
+          fi
+        done
+        for k in /data/adb/modules/Fontchanger/*.log; do
+          if [ -e $k ]; then
+            cp -f $k  $MODPATH 2>&1
+          fi
+        done
+        if [ -d $MODPATH/system ]; then
+          ui_print " [-] Backup and Restore Successful [-] "
         fi
-      done
-      if [ -d $MODPATH/system ]; then
-        ui_print " [-] Backup and Restore Successful [-] "
       fi
     fi
-  fi
-  chmod 0755 $TMPDIR/busybox-$ARCH32
-  ui_print " [-] Checking For Internet Connection... [-] "
-  chmod 0755 $TMPDIR/curl-$ARCH32
-  chmod 0755 $TMPDIR/busybox-$ARCH32
-  test_connection3
-  if ! "$CON3"; then
-    test_connection2
-    if ! "$CON2"; then
-      test_connection
+    chmod 0755 $TMPDIR/busybox-$ARCH32
+    ui_print " [-] Checking For Internet Connection... [-] "
+    chmod 0755 $TMPDIR/curl-$ARCH32
+    chmod 0755 $TMPDIR/busybox-$ARCH32
+    test_connection3
+    if ! "$CON3"; then
+      test_connection2
+      if ! "$CON2"; then
+        test_connection
+      fi
     fi
-  fi
-  if "$CON1" || "$CON2" || "$CON3"; then
-    imageless_magisk && MODULESPATH=/data/adb/modules || MODULESPATH=/sbin/.core/img
-    MODULESPATH2=$(ls $MODULESPATH)
-    for i in "${MODULESPATH2}"; do
-      if [ -f $MODULESPATH/$i/system/etc/fonts.xml ] || [ -d $MODULESPATH/$i/system/fonts ] && [ $i != Fontchanger ]; then
-	      if [ ! -f $MODULESPATH/$i/disable ]; then
-		      NAME=$(getvar $MODULESPATH/$i/module.prop)
-			    echo " [!] "
-			    echo " [!] Module editing fonts detected [!] "
-			    echo " [!] Module - $NAME [!] "
-			    echo " [!] "
-          exxit
+    if "$CON1" || "$CON2" || "$CON3"; then
+      for i in /storage/emulated/0/Fontchanger/*-list.txt; do
+        if [ -e $i ]; then
+          rm $i 2>&1
         fi
+      done
+      $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/fonts-list.txt https://john-fawkes.com/Downloads/fontlist/fonts-list.txt
+      $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/user-fonts-list.txt https://john-fawkes.com/Downloads/userfontlist/user-fonts-list.txt
+      $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/emojis-list.txt https://john-fawkes.com/Downloads/emojilist/emojis-list.txt
+      $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/avfonts-list.txt https://john-fawkes.com/Downloads/avfontlist/avfonts-list.txt
+      if [ -f /storage/emulated/0/Fontchanger/fonts-list.txt ] && [ -f /storage/emulated/0/Fontchanger/emojis-list.txt ] && [ -f /storage/emulated/0/Fontchanger/user-fonts-list.txt ] && [ -f /storage/emulated/0/Fontchanger/avfonts-list.txt ]; then
+        ui_print " [-] All Lists Downloaded Successfully... [-] "
+      else
+        ui_print " [!] Error Downloading Lists... [!] "
       fi
-    done
-    imageless_magisk && MODULESPATH=/data/adb/modules_update || MODULESPATH=/sbin/.core/img
-    MODULESPATH2=$(ls $MODULESPATH)
-    for i in "${MODULESPATH2}"; do
-      if [ -f $MODULESPATH/$i/system/etc/fonts.xml ] || [ -d $MODULESPATH/$i/system/fonts ] && [ $i != Fontchanger ]; then
-	      if [ ! -f $MODULESPATH/$i/disable ]; then
-		      NAME=$(getvar $MODULESPATH/$i/module.prop)
-			    echo " [!] "
-			    echo " [!] Module editing fonts detected [!] "
-			    echo " [!] Module - $NAME [!] "
-			    echo " [!] "
-          exxit
-        fi
-      fi
-    done
-    for i in /storage/emulated/0/Fontchanger/*-list.txt; do
-      if [ -e $i ]; then
-        rm $i 2>&1
-      fi
-    done
-    $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/fonts-list.txt https://john-fawkes.com/Downloads/fontlist/fonts-list.txt
-    $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/user-fonts-list.txt https://john-fawkes.com/Downloads/userfontlist/user-fonts-list.txt
-    $TMPDIR/curl-$ARCH32 -k -o /storage/emulated/0/Fontchanger/emojis-list.txt https://john-fawkes.com/Downloads/emojilist/emojis-list.txt
-    if [ -f /storage/emulated/0/Fontchanger/fonts-list.txt ] && [ -f /storage/emulated/0/Fontchanger/emojis-list.txt ] && [ -f /storage/emulated/0/Fontchanger/user-fonts-list.txt ]; then
-      ui_print " [-] All Lists Downloaded Successfully... [-] "
     else
-      ui_print " [!] Error Downloading Lists... [!] "
+      exxit " [!] No Internet Detected... [!] "
     fi
   else
-    exxit " [!] No Internet Detected... [!] "
+    exxit " [-] TWRP Install NOT Supported. Please Install Booted with Internet Connection... [-] "
   fi
-else
-  exxit " [-] TWRP Install NOT Supported. Please Install Booted with Internet Connection... [-] "
-fi
   cp -f $TMPDIR/curl-$ARCH32 $MODPATH/curl 2>&1
   cp -f $TMPDIR/sleep-$ARCH32 $MODPATH/sleep 2>&1
   cp -f $TMPDIR/zip $MODPATH/zip 2>&1
+  version_changes
   set +euxo pipefail
 }
 
@@ -314,24 +234,13 @@ set_permissions() {
     [ -f $file ] && set_perm $file  0  0  0700
   done
 
+#  mv -f $MODPATH/font_changer.sh $MODPATH/font_changer
+#  mv -f $MODPATH/Fontchanger-functions.sh $MODPATH/fontchanger-functions
+
   ui_print " "
   ui_print " [-] After Installing type su then hit enter and type font_changer in terminal [-] "
   ui_print " [-] Then Choose Option 6 to Read the How-to on How to Set up your Custom Fonts [-] "
   sleep 3
-#  if [ -f "$MOD_VER" ]; then
-#    if [ $(grep_prop versionCode $MOD_VER) -ge $(grep_prop versionCode $TMPDIR/module.prop) ]; then
-#      ui_print " [-] Restoring Backup Font and Emojis [-] "
-#      cp -rf $FCDIR/Backup/system /data/adb/modules/Fontchanger 2>&1
-#      if [ -d /data/adb/modules/Fontchanger/system ] && [ -f /data/adb/modules/Fontchanger/system/fonts/*.ttf ]; then
-#        ui_print " [-] Restore Successful [-] "
-#      else
-#        ui_print " [!] Restore Not Successful [!] "
-#        ui_print " [-] You can Manually Restore By Copying and Pasting "
-#        ui_print " $FCDIR/Backup/system Folder to /data/adb/modules/Fontchanger After Backing up "
-#        ui_print " By Following the Above Way to Backup and then Rebooting [-] "
-#      fi
-#    fi
-#  fi
 
   # Here are some examples:
   # set_perm_recursive  $MODPATH/system/lib       0     0       0755      0644
@@ -350,7 +259,7 @@ exxit() {
   set +euxo pipefail
   [ $1 -ne 0 ] && cancel "$2"
   exit $1
-}
+} 
 
 test_connection() {
   ui_print " [-] Testing internet connection [-] "
@@ -399,8 +308,8 @@ set_vars() {
 }
 
 log_handler() {
-  echo "" >> $INSTLOG 2>&1
-  echo -e "$(date +"%m-%d-%Y %H:%M:%S") - $1" >> $INSTLOG 2>&1
+  ui_print "" >> $INSTLOG 2>&1
+  ui_print -e "$(date +"%m-%d-%Y %H:%M:%S") - $1" >> $INSTLOG 2>&1
 }
 
 log_start() {
@@ -410,19 +319,36 @@ log_start() {
   else
     touch $INSTLOG
   fi
-  echo " " >> $INSTLOG 2>&1
-  echo "    *******************************************" >> $INSTLOG 2>&1
-  echo "    *                $MODTITLE             *" >> $INSTLOG 2>&1
-  echo "    *******************************************" >> $INSTLOG 2>&1
-  echo "    *                  v$VER                   *" >> $INSTLOG 2>&1
-  echo "    *******************************************" >> $INSTLOG 2>&1
-  echo "    *              By : $AUTHOR            *" >> $INSTLOG 2>&1
-  echo "    *******************************************" >> $INSTLOG 2>&1
-  echo " " >> $INSTLOG 2>&1
+  ui_print " " >> $INSTLOG 2>&1
+  ui_print "    *******************************************" >> $INSTLOG 2>&1
+  ui_print "    *                $MODTITLE             *" >> $INSTLOG 2>&1
+  ui_print "    *******************************************" >> $INSTLOG 2>&1
+  ui_print "    *                  v$VER                   *" >> $INSTLOG 2>&1
+  ui_print "    *******************************************" >> $INSTLOG 2>&1
+  ui_print "    *              By : $AUTHOR            *" >> $INSTLOG 2>&1
+  ui_print "    *******************************************" >> $INSTLOG 2>&1
+  ui_print " " >> $INSTLOG 2>&1
   log_handler "Starting module installation script"
 }
 
 log_print() {
   ui_print "$1"
   log_handler "$1"
+}
+
+version_changes() {
+  ui_print " "
+  ui_print "  LATEST CHANGES"
+  ui_print " "
+  NUM=$(grep -n "Changelog" $TMPDIR/README.md | sed -re "s|([[:digit:]]):.*|\1|")
+  tail -n +$NUM $TMPDIR/README.md | sed -n '/^$/q;p'
+  ui_print " " 
+  ui_print "If you would like to donate to me you can do so by going to https://paypal.me/BBarber61"
+  ui_print " "
+
+  ui_print "  LINKS"
+  ui_print "   - Git repository: github.com/Magisk-Modules-Repo/${MODID}/"
+  ui_print "   - Telegram group: https://t.me/fontchange_magisk"
+  ui_print "   - Telegram profile: t.me/johnfawkes/"
+
 }

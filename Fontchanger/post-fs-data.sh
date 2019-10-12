@@ -36,17 +36,17 @@ if [ -e $FCDIR/${MODID}_install.log ]; then
   mv $FCDIR/${MODID}_install.log $MODPATH 2>/dev/null
 fi
 
-if ! mount -o remount,rw /sbin 2>/dev/null; then
-  cp -a /sbin /dev/.sbin
-  mount -o bind,rw /dev/.sbin /sbin
-fi
+#if ! mount -o remount,rw /sbin 2>/dev/null; then
+#  cp -a /sbin /dev/.sbin
+#  mount -o bind,rw /dev/.sbin /sbin
+#fi
 mkdir -p /sbin/.$MODID
 [ -h /sbin/.$MODID/$MODID ] && rm -rf /sbin/.$MODID/$MODID 2>/dev/null \
   || rm -rf /sbin/.$MODID/$MODID 2>/dev/null
 [ ${MAGISK_VER_CODE} -gt 18100 ] \
-  && ln -fs $MODPATH /sbin/.$MODID/$MODID \
+  && ln -s $MODPATH /sbin/.$MODID/$MODID \
   || cp -a $MODPATH /sbin/.$MODID/$MODID
-ln -fs $MODPATH /sbin/.$MODID/$MODID
+#ln -fs $MODPATH /sbin/.$MODID/$MODID
 ln -fs /sbin/.$MODID/$MODID/font_changer.sh /sbin/font_changer
 ln -fs /sbin/.$MODID/$MODID/${MODID}-functions.sh /sbin/${MODID}-functions
 
