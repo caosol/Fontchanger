@@ -11,15 +11,11 @@ get_file_value() {
   fi
 }
 
-MAGISKVERCODE=$(echo -e $(get_file_value /data/adb/magisk/util_functions.sh "MAGISK_VER_CODE=") | sed 's|-.*||')
+MAGISKVERCODE=$(echo $(get_file_value /data/adb/magisk/util_functions.sh "MAGISK_VER_CODE=") | sed 's|-.*||')
 
 OLDPATH=$PATH
 MODID=Fontchanger
-if [ $MAGISKVERCODE -gt 18001 ]; then
-  MODPATH=/data/adb/modules/$MODID
-else
-  MODPATH=/sbin/.magisk/img/$MODID
-fi
+MODPATH=/data/adb/modules/$MODID
 MODPROP=$MODPATH/module.prop
 SDCARD=/storage/emulated/0
 FCDIR=$SDCARD/Fontchanger
@@ -41,7 +37,7 @@ get_var() {
 }
 
 _name=$(basename $0)
-ls /data >/dev/null 2>&1 || { echo -e "$MODID needs to run as root!"; echo -e "type 'su' then '$_name'"; quit 1; }
+ls /data >/dev/null 2>&1 || { echo "$MODID needs to run as root!"; echo "type 'su' then '$_name'"; quit 1; }
 
 # Load magisk stuff
 if [ -f /data/adb/magisk/util_functions.sh ]; then

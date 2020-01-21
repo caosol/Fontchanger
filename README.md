@@ -47,6 +47,9 @@
 - If you would like to donate to me you can do so by going to <a href="https://paypal.me/BBarber61">PayPal</a>
 
 ## Changelog
+## v2.6.0.2 - 11.21.2020
+* Fix issues with apps not opening and fonts not showing in terminal and internal storage issues
+
 ## v2.6.0.1 - 11.21.2020
 * Fix Return to Menu Options
 
