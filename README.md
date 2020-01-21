@@ -5,7 +5,7 @@
     <img src="https://img.shields.io/badge/Version-v2.6.0.0-blue.svg?longCache=true&style=popout-square"
       alt="Version" />
   <!-- Last Updated -->
-    <img src="https://img.shields.io/badge/Updated-November 20, 2019-green.svg?longCache=true&style=flat-square"
+    <img src="https://img.shields.io/badge/Updated-January 21, 2020-green.svg?longCache=true&style=flat-square"
       alt="_time_stamp_" />
 </div>
 
