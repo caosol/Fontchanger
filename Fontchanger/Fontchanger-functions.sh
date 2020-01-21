@@ -424,12 +424,12 @@ emoji_menu() {
           echo -e "${R}Quiting...${N}"
           clear
           quit
-        elif [[ -n ${choice//[0-9]/} ]]; then
-          invalid
-        elif [ $choice -le $wrong ]; then
-          apply_emoji
         elif [ $choice = "r" ]; then
           return_menu
+        elif [ $choice -le $wrong ]; then
+          apply_emoji
+        elif [[ -n ${choice//[0-9]/} ]]; then
+          invalid
         else
           [ $choice -gt $wrong ] && invalid
         fi
@@ -534,12 +534,12 @@ custom_emoji_menu() {
           echo -e "${R}Quiting...${N}"
           clear
           quit
-        elif [[ -n ${choice//[0-9]/} ]]; then
-          invalid
-        elif [ $choice -le $wrong ]; then
-          apply_custom_emoji
         elif [ $choice = "r" ]; then
           return_menu
+        elif [ $choice -le $wrong ]; then
+          apply_custom_emoji
+        elif [[ -n ${choice//[0-9]/} ]]; then
+          invalid
         else
           [ $choice -gt $wrong ] && invalid
         fi
@@ -667,12 +667,12 @@ custom_menu() {
           echo -e "${R}Quiting...${N}"
           clear
           quit
-        elif [[ -n ${choice//[0-9]/} ]]; then
-          invalid
-        elif [ $choice -le $wrong ]; then
-          apply_custom_font
         elif [ $choice = "r" ]; then
           return_menu
+        elif [ $choice -le $wrong ]; then
+          apply_custom_font
+        elif [[ -n ${choice//[0-9]/} ]]; then
+          invalid
         else
           [ $choice -gt $wrong ] && invalid
         fi
@@ -794,12 +794,12 @@ font_menu() {
           echo -e "${R}Quiting...${N}"
           clear
           quit
-        elif [[ -n ${choice//[0-9]/} ]]; then
-          invalid
-        elif [ $choice -le $wrong ]; then
-          apply_font
         elif [ $choice = "r" ]; then
           return_menu
+        elif [ $choice -le $wrong ]; then
+          apply_font
+        elif [[ -n ${choice//[0-9]/} ]]; then
+          invalid         
         else
           [ $choice -gt $wrong ] && invalid
         fi
@@ -921,12 +921,12 @@ avfont_menu() {
           echo -e "${R}Quiting...${N}"
           clear
           quit
-        elif [[ -n ${choice//[0-9]/} ]]; then
-          invalid
-        elif [ $choice -le $wrong ]; then
-          apply_avfont
         elif [ $choice = "r" ]; then
           return_menu
+        elif [ $choice -le $wrong ]; then
+          apply_avfont
+        elif [[ -n ${choice//[0-9]/} ]]; then
+          invalid
         else
           [ $choice -gt $wrong ] && invalid
         fi
@@ -1170,12 +1170,12 @@ user_font_menu() {
           echo -e "${R}Quiting...${N}"
           clear
           quit
-        elif [[ -n ${choice//[0-9]/} ]]; then
-          invalid
-        elif [ $choice -le $wrong ]; then
-          apply_user_font
         elif [ $choice = "r" ]; then
           return_menu
+        elif [ $choice -le $wrong ]; then
+          apply_user_font
+        elif [[ -n ${choice//[0-9]/} ]]; then
+          invalid
         else
           [ $choice -gt $wrong ] && invalid
         fi
