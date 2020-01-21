@@ -28,9 +28,9 @@
 - Please open an issue on my github page <a href="https://github.com/Magisk-Modules-Repo/fontchanger"> Github </a> or if your on Telegram please join <a href="https://t.me/fontchange_magisk"> Telegram </a> Telegram i will see and fix the issue faster as I am always on Telegram.
 
 ## Compatibility
-- Magisk 18.0 +
+- Magisk 19.0 +
 - All devices
-- All Android versions
+- All Android versions ( Now Supports Android 10 )
 - Roboto/Google-Sans/Product-Sans font as default font
 
 ## Credits
