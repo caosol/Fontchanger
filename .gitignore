@@ -2,3 +2,6 @@ _builds/*
 .DS_Store
 build.sh
 check_syntax.sh
+Todo.txt
+build.bat
+fonts-list.txt

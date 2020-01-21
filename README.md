@@ -2,10 +2,10 @@
 
 <div align="center">
   <!-- Version -->
-    <img src="https://img.shields.io/badge/Version-v2.5.4.2-blue.svg?longCache=true&style=popout-square"
+    <img src="https://img.shields.io/badge/Version-v2.6.0.0-blue.svg?longCache=true&style=popout-square"
       alt="Version" />
   <!-- Last Updated -->
-    <img src="https://img.shields.io/badge/Updated-September 10, 2019-green.svg?longCache=true&style=flat-square"
+    <img src="https://img.shields.io/badge/Updated-November 20, 2019-green.svg?longCache=true&style=flat-square"
       alt="_time_stamp_" />
 </div>
 
@@ -31,13 +31,14 @@
 - Magisk 18.0 +
 - All devices
 - All Android versions
-- Roboto font as default font (until further notice)
+- Roboto/Google-Sans/Product-Sans font as default font
 
 ## Credits
 - Font Files from <a href="https://forum.xda-developers.com/android/themes/fonts-flashable-zips-t3219827">@giaton @xdadevelopers</a>
 - For making Midnight Core <a href="https://forum.xda-developers.com/member.php?u=8918441">@oldmid @xdadevelopers</a>
 - For making and allowing me to use his busybox <a href="https://forum.xda-developers.com/member.php?u=4544860">@osm0sis</a>
 - For some code and the update feature <a href="https://t.me/vr25xda/">@vr25</a>
+- For creating some awesome fonts! <a href="https://forum.xda-developers.com/apps/magisk/avfonts-march-6-t3760827">@lupin_the_third</a>
 
 ## Donators
 - <a href="https://t.me/botom8">@botom8 Telegram</a>
@@ -46,6 +47,26 @@
 - If you would like to donate to me you can do so by going to <a href="https://paypal.me/BBarber61">PayPal</a>
 
 ## Changelog
+## v2.6.0.0 - 11.20.2019 - 1.21.2020
+## HUGE UPDATE ##
+* Add latest bash binary and switch from mksh to bash for terminal
+* Fix some typos
+* Fix Custom Emojis
+* Add Android 10 and /product and /system/product support
+* Updating with a font installed now backs up fonts and restores
+* Major code rewrite
+* Bug Fixes
+* Add support for LG stock rom lockscreen clock
+* Fix install and terminal logging
+* Fix restore stock fonts/emojis
+* Fix user fonts
+* Fix cp errors on some devices
+* Move post-fs-data to service.sh
+* Add Busybox binary for unzipping
+* Fix startup errors in terminal
+* Now update lists only runs on first run and not when returning to menu
+* Fix delete zip code logic
+
 ## v2.5.4.2 - 10.11.2019
 * Fix user submitted fonts for good now
 * Fix Conflicting font/emoji modules. (install will now abort if the user has any font or emoji module installed and its not disabled)
