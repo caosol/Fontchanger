@@ -743,11 +743,11 @@ apply_font() {
   truncate -s 0 $CFONT
   echo -e "CURRENT=$choice2" >> $CFONT
   if [ -d $MODPATH/product/fonts ]; then
-    is_empty_font
+    is_empty_font $MODPATH/product/fonts
   elif [ -d $MODPATH/system/product/fonts ]; then
-    is_empty_font
+    is_empty_font $MODPATH/system/product/fonts
   elif [ -d $MODPATH/system/fonts ]; then
-    is_empty_font
+    is_empty_font $MODPATH/system/fonts
   fi
 }
 
@@ -870,11 +870,11 @@ apply_avfont() {
   truncate -s 0 $CFONT
   echo -e "CURRENT=$choice2" >> $CFONT
   if [ -d $MODPATH/product/fonts ]; then
-    is_empty_font
+    is_empty_font $MODPATH/product/fonts
   elif [ -d $MODPATH/system/product/fonts ]; then
-    is_empty_font
+    is_empty_font $MODPATH/system/product/fonts
   elif [ -d $MODPATH/system/fonts ]; then
-    is_empty_font
+    is_empty_font $MODPATH/system/fonts
   fi
 }
 
@@ -1120,11 +1120,11 @@ apply_user_font() {
   truncate -s 0 $CFONT
   echo -e "CURRENT=$choice2" >> $CFONT
   if [ -d $MODPATH/product/fonts ]; then
-    is_empty_font
+    is_empty_font $MODPATH/product/fonts
   elif [ -d $MODPATH/system/product/fonts ]; then
-    is_empty_font
+    is_empty_font $MODPATH/system/product/fonts
   elif [ -d $MODPATH/system/fonts ]; then
-    is_empty_font
+    is_empty_font $MODPATH/system/fonts
   fi
 }
 
@@ -1477,11 +1477,11 @@ random_menu() {
         truncate -s 0 $CFONT
         echo -e "CURRENT=$choice2" >> $CFONT
         if [ -d $MODPATH/product/fonts ]; then
-          is_empty_font
+          is_empty_font $MODPATH/product/fonts
         elif [ -d $MODPATH/system/product/fonts ]; then
-          is_empty_font
+          is_empty_font $MODPATH/system/product/fonts
         elif [ -d $MODPATH/system/fonts ]; then
-          is_empty_font
+          is_empty_font $MODPATH/system/fonts
         fi
       ;;
       n)

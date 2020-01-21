@@ -2,7 +2,7 @@
 
 <div align="center">
   <!-- Version -->
-    <img src="https://img.shields.io/badge/Version-v2.6.0.0-blue.svg?longCache=true&style=popout-square"
+    <img src="https://img.shields.io/badge/Version-v2.6.0.3-blue.svg?longCache=true&style=popout-square"
       alt="Version" />
   <!-- Last Updated -->
     <img src="https://img.shields.io/badge/Updated-January 21, 2020-green.svg?longCache=true&style=flat-square"
@@ -47,6 +47,9 @@
 - If you would like to donate to me you can do so by going to <a href="https://paypal.me/BBarber61">PayPal</a>
 
 ## Changelog
+## v2.6.0.3 - 11.21.2020
+* Fix issue with checking for empty directories
+
 ## v2.6.0.2 - 11.21.2020
 * Fix issues with apps not opening and fonts not showing in terminal and internal storage issues
 
