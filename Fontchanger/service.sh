@@ -21,8 +21,7 @@ TMPLOGLOC=$FCDIR/logs
 mkdir -p /sbin/.$MODID/$MODID
 mkdir -p $TMPLOGLOC
 touch $TMPLOGLOC/${MODID}-service.log
-exec 2>$TMPLOGLOC/${MODID}-service.log
-set -x 2>&1 >/dev/null
+set -x 2>$TMPLOGLOC/${MODID}-service.log
 #if ! mount -o remount,rw /sbin 2>/dev/null; then
 #  cp -a /sbin /dev/.sbin
 #  mount -o bind,rw /dev/.sbin /sbin
