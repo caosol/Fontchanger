@@ -47,6 +47,15 @@
 - If you would like to donate to me you can do so by going to <a href="https://paypal.me/BBarber61">PayPal</a>
 
 ## Changelog
+## v2.6.0.4 - 11.26.2020
+* Fix fonts not applying correctly
+* Add support for LG stock Rom on Pie
+* Fix delete zips, move them to seperate menus
+* Remove all downloaded zips during install since i changed the structure of the zips
+* Fix some typos/bugs
+* Rename common folder to tools
+* Fix symlink from $MODPATH to /sbin/Fontchanger
+
 ## v2.6.0.3 - 11.21.2020
 * Fix issue with checking for empty directories
 

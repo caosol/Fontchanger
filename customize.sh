@@ -1,3 +1,19 @@
+remove_zips() {
+for i in $FCDIR/Fonts/*.zip; do
+  rm -f $i
+done
+for i in $FCDIR/Fonts/*/*.zip; do
+  rm -rf $i
+done
+
+for i in $FCDIR/Emojis/*.zip; do
+  rm -f $i
+done
+for i in $FCDIR/Emojis/*/*.zip; do
+  rm -rf $i
+done
+}
+
 set_permissions() {
   set_perm_recursive $MODPATH 0 0 0755 0644
   set_perm $MODPATH/curl 0 0 0755
@@ -69,9 +85,9 @@ rm -f $TMPDIR/google.idx
 get_var() { sed -n 's/^name=//p' ${1}; }
 
 set_vars() {
-  MODTITLE="$(grep_prop name $TMPDIR/module.prop)"
-  VER=$(grep_prop version $TMPDIR/module.prop)
-  AUTHOR=$(grep_prop author $TMPDIR/module.prop)
+  MODTITLE="$(grep_prop name $MODPATH/module.prop)"
+  VER=$(grep_prop version $MODPATH/module.prop)
+  AUTHOR=$(grep_prop author $MODPATH/module.prop)
   MAGISK_VER="$(grep_prop MAGISK_VER_CODE /data/adb/magisk/util_functions.sh)"
   FCDIR=/storage/emulated/0/Fontchanger
   MOD_VER="/data/adb/modules/Fontchanger/module.prop"
@@ -81,8 +97,8 @@ version_changes() {
   ui_print " "
   ui_print "  LATEST CHANGES"
   ui_print " "
-  NUM=$(grep -n "Changelog" $MODPATH/README.md | sed -re "s|([[:digit:]]):.*|\1|")
-  tail -n +$NUM $MODPATH/README.md | sed -n '/^$/q;p'
+  NUM=$(grep -n "Changelog" $TMPDIR/README.md | sed -re "s|([[:digit:]]):.*|\1|")
+  tail -n +$NUM $TMPDIR/README.md | sed -n '/^$/q;p'
   ui_print " " 
   ui_print "If you would like to donate to me you can do so by going to https://paypal.me/BBarber61"
   ui_print " "
@@ -101,6 +117,7 @@ exec 2>/storage/emulated/0/Fontchanger/logs/Fontchanger-install-verbose.log
 set -x
 set -euo pipefail
 trap 'exxit $?' EXIT
+unzip -o "$ZIPFILE" 'module.prop' -d $MODPATH 2>&1
 set_vars
 if $BOOTMODE; then
   ui_print "Checking for any other font modules installed... "
@@ -119,6 +136,7 @@ if $BOOTMODE; then
       fi
     fi
   done
+  remove_zips
   if [ -d /data/adb/modules/Fontchanger/system ] || [ -d /data/adb/modules/Fontchanger/product ]; then
     ui_print "Backing Up Installed Fonts and/or Emojis"
     if [ -d /data/adb/modules/Fontchanger/system ]; then
@@ -143,8 +161,8 @@ if $BOOTMODE; then
   fi
   ui_print " [-] Extracting module files [-] "
   unzip -o "$ZIPFILE" "$MODID/*" -d ${MODPATH%/*}/ 2>&1
-  unzip -o "$ZIPFILE" '*.md' 'module.prop' -d $MODPATH 2>&1
-  unzip -oj "$ZIPFILE" 'common/*' -d $TMPDIR 2>&1
+  unzip -o "$ZIPFILE" 'README.md' -d $TMPDIR 2>&1
+  unzip -oj "$ZIPFILE" "tools/*" -d $TMPDIR 2>&1
   mkdir -p /storage/emulated/0/Fontchanger/Fonts/Custom 2>&1
   mkdir -p /storage/emulated/0/Fontchanger/Fonts/User 2>&1
   mkdir -p /storage/emulated/0/Fontchanger/Fonts/avfonts 2>&1

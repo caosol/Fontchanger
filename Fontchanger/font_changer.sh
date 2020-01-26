@@ -45,14 +45,14 @@ if [ -f /data/adb/magisk/util_functions.sh ]; then
 elif [ -f /data/magisk/util_functions.sh ]; then
   . /data/magisk/util_functions.sh
 else
-  echo -e "! Can't find magisk util_functions! Aborting!"; exit 1
+  echo "! Can't find magisk util_functions! Aborting!"; exit 1
 fi
 
 # Load Needed Functions
 if [ -e /sbin/${MODID}-functions ]; then
   . /sbin/${MODID}-functions
 else
-  echo -e "! Can't find functions script! Aborting!"; exit 1
+  echo "! Can't find functions script! Aborting!"; exit 1
 fi  
 
 #=========================== Set Log Files
@@ -90,127 +90,52 @@ if [[ $setabort == 1 ]]; then
   abort
 fi
 
-# set_busybox <busybox binary>
-# alias busybox applets
-set_busybox() {
-  if [ -x "$1" ]; then
-    for i in $(${1} --list); do
-      if [ "$i" != 'echo' ]; then
-        alias "$i"="${1} $i" >/dev/null 2>&1
-      fi
-    done
-    BBox=true
-    _bb=$1
-  fi
-}
-BBox=false
 # Set Busybox up
-if [ "$(busybox 2>/dev/null)" ]; then
-  BBox=true
-elif [ -e /data/adb/magisk/busybox ]; then
-  PATH=/data/adb/magisk/busybox:$PATH
-	_bb=/data/adb/magisk/busybox
-  BBox=true
-elif [ -e $MODPATH/busybox ]; then
+if [ -d /data/adb/modules/busybox-ndk ]; then
+  BUSY=$(find /data/adb/modules/busybox-ndk/system/* -maxdepth 0 | sed 's#.*/##')
+  for i in $BUSY; do
+    PATH=/data/adb/modules/busybox-ndk/system/$i/busybox:$PATH
+    _bb=/data/adb/modules/busybox-ndk/system/$i/busybox
+    BBox=true
+  done
+elif [ -f $MODPATH/busybox ]; then
   PATH=$MODPATH/busybox:$PATH
   _bb=$MODPATH/busybox
   BBox=true
-else
-  BBox=false
-  echo "! Busybox not detected"
-	echo "Please install one (@osm0sis' busybox recommended)"
-  abort
+elif [ -f /data/adb/magisk/busybox ]; then
+  PATH=/data/adb/magisk/busybox:PATH
+  _bb=/data/adb/magisk/busybox
+  BBox=true	
 fi
-set_busybox $_bb
-[ $? -ne 0 ] && exit $?
 
 if [ -z "$(echo -e $PATH | grep /sbin:)" ]; then
  alias resetprop="/data/adb/magisk/magisk resetprop"
 fi
 
 [ -n "$ANDROID_SOCKET_adbd" ] && alias clear='echo'
-
-BBV=$(busybox | grep "BusyBox v" | sed 's|.*BusyBox ||' | sed 's| (.*||')
+_bbname="$($_bb | head -n1 | awk '{print $1,$2}')"
+if [ "$_bbname" == "" ]; then
+  _bbname="BusyBox not found!"
+  BBox=false
+fi
 
 alias curl=$MODPATH/curl
 alias sleep=$MODPATH/sleep
 #alias xmlstarlet=$MODPATH/xmlstarlet
 alias zip=$MODPATH/zip
 
-# Log print
-#echo -e "Functions loaded." >> $LOG
-#if $BBox; then#
-#  BBV=$(busybox | grep "BusyBox v" | sed 's|.*BusyBox ||' | sed 's| (.*||')
-#  echo -e "Using busybox: ${PATH} (${BBV})." >> $LOG
-#else
-#  echo -e "Using installed applets (not busybox)" >> $LOG
-#fi
-
 # Functions
-get_file_value() {
-  if [ -f "$1" ]; then
-    grep $2 $1 | sed "s|.*${2}||" | sed 's|\"||g'
-  fi
-} 
-
-#api_level_arch_detect() {
-#  API=$(grep_prop ro.build.version.sdk)
-#  ABI=$(grep_prop ro.product.cpu.abi | cut -c-3)
-#  ABI2=$(grep_prop ro.product.cpu.abi2 | cut -c-3)
-#  ABILONG=$(grep_prop ro.product.cpu.abi)
-#  ARCH=arm
-#  ARCH32=arm
-#  IS64BIT=false
-#  if [ "$ABI" = "x86" ]; then ARCH=x86; ARCH32=x86; fi;
-#  if [ "$ABI2" = "x86" ]; then ARCH=x86; ARCH32=x86; fi;
-#  if [ "$ABILONG" = "arm64-v8a" ]; then ARCH=arm64; ARCH32=arm; IS64BIT=true; fi;
-#  if [ "$ABILONG" = "x86_64" ]; then ARCH=x64; ARCH32=x86; IS64BIT=true; fi;
-#}
-
-#set_perm() {
-#  chown $2:$3 $1 || return 1
-#  chmod $4 $1 || return 1
-#  CON=$5
-#  [ -z $CON ] && CON=u:object_r:system_file:s0
-#  chcon $CON $1 || return 1
-#}
-
-#set_perm_recursive() {
-#  find $1 -type d 2>/dev/null | while read dir; do
-#    set_perm $dir $2 $3 $4 $6
-#  done
-#  find $1 -type f -o -type l 2>/dev/null | while read file; do
-#    set_perm $file $2 $3 $5 $6
-#  done
-#}
-
-# Mktouch
-#mktouch() {
-#  mkdir -p ${1%/*} 2>/dev/null
-#  [ -z $2 ] && touch $1 || echo $2 > $1
-#  chmod 644 $1
-#}
-
-# Grep prop
-grep_prop() {
-  local REGEX="s/^$1=//p"
-  shift
-  local FILES=$@
-  [ -z "$FILES" ] && FILES='/system/build.prop'
-  sed -n "$REGEX" $FILES 2>/dev/null | head -n 1
-}
-
 # Abort
 abort() {
-  echo -e "$1"
+  echo "$1"
   exit 1
 }
 
 magisk_version() {
 if grep MAGISK_VER /data/adb/magisk/util_functions.sh; then
-  echo -e "$MAGISK_VERSION $MAGISK_VERSIONCODE" >> $LOG 2>&1
+  echo "$MAGISK_VERSION $MAGISK_VERSIONCODE" >> $LOG 2>&1
 else
-  echo -e "Magisk not installed" >> $LOG 2>&1
+  echo "Magisk not installed" >> $LOG 2>&1
 fi
 }
 
@@ -251,7 +176,7 @@ loadBar=' '   # Load UI
 }
 
 # No. of characters in $MODTITLE, $VER, and $REL
-character_no=$(echo -e "$MODTITLE $VER $REL" | wc -c)
+character_no=$(echo "$MODTITLE $VER $REL" | wc -c)
 
 # Divider
 div="${Bl}$(printf '%*s' "${character_no}" '' | tr " " "=")${N}"
@@ -260,8 +185,8 @@ div="${Bl}$(printf '%*s' "${character_no}" '' | tr " " "=")${N}"
 # based on $div with <title>
 title_div() {
   [ "$1" == "-c" ] && local character_no=$2 && shift 2
-  [ -z "$1" ] && { local message=; no=0; } || { local message="$@ "; local no=$(echo -e "$@" | wc -c); }
-  [ $character_no -gt $no ] && local extdiv=$((character_no-no)) || { echo -e "Invalid!"; return; }
+  [ -z "$1" ] && { local message=; no=0; } || { local message="$@ "; local no=$(echo "$@" | wc -c); }
+  [ $character_no -gt $no ] && local extdiv=$((character_no-no)) || { echo "Invalid!"; return; }
   echo -e "${W}$message${N}${Bl}$(printf '%*s' "$extdiv" '' | tr " " "=")${N}"
 }
 
@@ -271,10 +196,10 @@ if [ -f "$3" ]; then
   if grep -q "$1=" "$3"; then
     sed -i "s/${1}=.*/${1}=${2}/g" "$3"
   else
-    echo -e "$1=$2" >> "$3"
+    echo "$1=$2" >> "$3"
   fi
 else
-  echo -e "$3 doesn't exist!"
+  echo "$3 doesn't exist!"
 fi
 }
 
@@ -334,21 +259,21 @@ e_spinner() {
 # tests if there's internet connection
 
 test_connection() {
-  ui_print " [-] Testing internet connection [-] "
-  ping -q -c 1 -W 1 google.com >/dev/null 2>&1 && ui_print " [-] Internet Detected [-] "; CON1=true; CON2=false; CON3=false || { abort " [-] Error, No Internet Connection [-] ";NCON=true; }
+  echo " [-] Testing internet connection [-] "
+  ping -q -c 1 -W 1 google.com >/dev/null 2>&1 && echo " [-] Internet Detected [-] "; CON1=true; CON2=false; CON3=false || { abort " [-] Error, No Internet Connection [-] ";NCON=true; }
 }
 
 test_connection2() {
   case "$(curl -s --max-time 2 -I http://google.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
-  [23]) ui_print " [-] HTTP connectivity is up [-] "
+  [23]) echo " [-] HTTP connectivity is up [-] "
     CON1=false
     CON2=true
     CON3=false
     ;;
-  5) ui_print " [!] The web proxy won't let us through [!] "
+  5) echo " [!] The web proxy won't let us through [!] "
     NCON2=true
     ;;
-  *) ui_print " [!] The network is down or very slow [!] "
+  *) echo " [!] The network is down or very slow [!] "
     NCON2=true
     ;;
   esac
@@ -357,10 +282,10 @@ test_connection2() {
 test_connection3() {
   wget -q --tries=5 --timeout=10 http://www.google.com -O $MODPATH/google.idx >/dev/null 2>&1
   if [ ! -s $MODPATH/google.idx ]; then
-    ui_print " [!] Not Connected... [!] "
+    echo " [!] Not Connected... [!] "
     NCON3=true
   else
-    ui_print " [-] Connected..! [-] "
+    echo " [-] Connected..! [-] "
     CON1=false
     CON2=false
     CON3=true
@@ -394,7 +319,7 @@ upload_logs() {
       Log:   $logUp
       Zip: $XZLOGUp" | nc termbin.com 9999
     fi
-  } || echo -e "Busybox not found!"
+  } || echo "Busybox not found!"
   exit
 }
 
@@ -420,7 +345,7 @@ mod_head() {
   echo -e "$div"
   echo -e "${R}$BRAND${N},${R}$MODEL${N},${R}$ROM${N}"
   echo -e "$div"
-  echo -e "${W}BUSYBOX VERSION = ${N}${R} $BBV${N}"
+  echo -e "${W}BUSYBOX VERSION = ${N}${R} $_bbname${N}"
   echo -e "$div"
   echo -e "${W}MAGISK VERSION = ${N}${R} $MAGISK_VERSION${N}" 
   echo -e "$div"
@@ -532,7 +457,8 @@ menu() {
         log_print "${G}[-] Collecting logs and creating archive...${N}"
         magisk_version
         collect_logs
-        upload_logs
+#        upload_logs
+        echo -e "${G}[-] Upload $FCDIR/Fontchanger_logs.zip to the Telegram Group and Tag @johnfawkes${N}"
         quit
       ;;
       6)
