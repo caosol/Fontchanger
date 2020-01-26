@@ -27,11 +27,10 @@ set -x 2>&1 >/dev/null
 #  cp -a /sbin /dev/.sbin
 #  mount -o bind,rw /dev/.sbin /sbin
 #fi
-([ -h /sbin/.$MODID/$MODID ] && rm -rf /sbin/.$MODID/$MODID 2>/dev/null || rm -rf /sbin/.$MODID/$MODID 2>/dev/null && ln -s $MODPATH /sbin/.$MODID/$MODID
-#ln -fs $MODPATH /sbin/.$MODID/$MODID
+
 ln -fs /sbin/.$MODID/$MODID/font_changer.sh /sbin/font_changer
 ln -fs /sbin/.$MODID/$MODID/${MODID}-functions.sh /sbin/${MODID}-functions
-) &
+
 # fix termux's PATH
 termuxSu=/data/data/com.termux/files/usr/bin/su
 if [ -f $termuxSu ] && grep -q 'PATH=.*/sbin/su' $termuxSu; then
