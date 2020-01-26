@@ -47,6 +47,12 @@
 - If you would like to donate to me you can do so by going to <a href="https://paypal.me/BBarber61">PayPal</a>
 
 ## Changelog
+## v2.6.0.7 - 11.26.2020
+* Finally fix internal storage issues
+
+## v2.6.0.6 - 11.26.2020
+* Fix internal storage access issue
+
 ## v2.6.0.5 - 11.26.2020
 * Fix service.sh
 

@@ -1,10 +1,10 @@
-#!/data/adb/modules/Fontchanger/bash
+#!/system/bin/sh
+
 # Do NOT assume where your module will be located.
 # ALWAYS use $MODDIR if you need to know where this script
 # and module is placed.
 # This will make sure your module will still work
 # if Magisk change its mount point in the future
-[ -f $PWD/${0##*/} ] && MODPATH=$PWD || MODPATH=${0%/*}
 
 get_file_value() {
   if [ -f "$1" ]; then
@@ -15,18 +15,20 @@ get_file_value() {
 MODID=Fontchanger
 MAGISK_VER_CODE="$(echo $(get_file_value /data/adb/magisk/util_functions.sh MAGISK_VER_CODE) | sed 's|-.*||')"
 FCDIR=/storage/emulated/0/Fontchanger
-TMPLOGLOC=$FCDIR/logs
+MODPATH=/data/adb/modules/$MODID
 
-# log
-mkdir -p /sbin/.$MODID/$MODID
-mkdir -p $TMPLOGLOC
-touch $TMPLOGLOC/${MODID}-service.log
-set -x 2>$TMPLOGLOC/${MODID}-service.log
-#if ! mount -o remount,rw /sbin 2>/dev/null; then
-#  cp -a /sbin /dev/.sbin
-#  mount -o bind,rw /dev/.sbin /sbin
-#fi
 
+mkdir -p /sbin/.$MODID
+if [[ -h /sbin/.$MODID/$MODID && -d /sbin/.$MODID/$MODID ]]; then
+  rm /sbin/.$MODID/$MODID
+else
+  rm -rf /sbin/.$MODID/$MODID 2>&1
+fi
+if [ ${MAGISK_VER_CODE} -gt 18100 ]; then
+  ln -s $MODPATH /sbin/.$MODID/$MODID
+else
+  cp -a $MODPATH /sbin/.$MODID/$MODID
+fi
 ln -fs /sbin/.$MODID/$MODID/font_changer.sh /sbin/font_changer
 ln -fs /sbin/.$MODID/$MODID/${MODID}-functions.sh /sbin/${MODID}-functions
 
@@ -38,5 +40,4 @@ if [ -f $termuxSu ] && grep -q 'PATH=.*/sbin/su' $termuxSu; then
   rm $termuxSu.tmp
 fi
 
-set +x
-exit
+exit 0
