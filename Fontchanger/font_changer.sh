@@ -37,8 +37,51 @@ if [ -z "$(echo -e $PATH | grep /sbin:)" ]; then
  alias resetprop="/data/adb/magisk/magisk resetprop"
 fi
 
-# Set Busybox up
-if [ -d /data/adb/modules/busybox-ndk ]; then
+#=========================== Set Log Files
+#mount -o remount,rw $CACHELOC 2>/dev/null
+#mount -o rw,remount $CACHELOC 2>/dev/null
+# > Logs should go in this file
+LOG=$TMPLOGLOC/${MODID}.log
+oldLOG=$TMPLOGLOC/${MODID}-old.log
+# > Verbose output goes here
+VERLOG=$TMPLOGLOC/${MODID}-verbose.log
+oldVERLOG=$TMPLOGLOC/${MODID}-verbose-old.log
+stdoutLOG=$TMPDIRLOC/$MODID-STDOUT.log
+oldstdoutLOG=$TMPDIRLOC/$MODID-STDOUT-old.log
+
+
+# Start Logging verbosely
+mv -f $VERLOG $oldVERLOG 2>/dev/null
+exec 3>&1
+exec 1>$stdoutLOG
+exec 2>$VERLOG
+set -x 2>&1 >/dev/null
+
+
+
+# Variables:
+#  BBok - If busybox detection was ok (true/false)
+#  _bb - Busybox binary directory
+#  _bbname - Busybox name
+
+# set_busybox <busybox binary>
+# alias busybox applets
+set_busybox() {
+  if [ -x "$1" ]; then
+    for i in $(${1} --list); do
+      if [ "$i" != 'echo' ] || [ "$i" != 'zip' ] || [ "$1" != 'sleep' ]; then
+        alias "$i"="${1} $i" >/dev/null 2>&1
+      fi
+    done
+    _busybox=true
+    _bb=$1
+  fi
+}
+_busybox=false
+
+if $_busybox; then
+  true
+elif [ -d /data/adb/modules/busybox-ndk ]; then
   BUSY=$(find /data/adb/modules/busybox-ndk/system/* -maxdepth 0 | sed 's#.*/##')
   for i in $BUSY; do
     PATH=/data/adb/modules/busybox-ndk/system/$i/busybox:$PATH
@@ -55,6 +98,8 @@ elif [ -f /data/adb/magisk/busybox ]; then
   BBox=true	
 fi
 
+set_busybox $_bb
+[ $? -ne 0 ] && exit $?
 [ -n "$ANDROID_SOCKET_adbd" ] && alias clear='echo'
 _bbname="$($_bb | head -n1 | awk '{print $1,$2}')"
 if [ "$_bbname" == "" ]; then
@@ -88,25 +133,7 @@ if [ -e /sbin/${MODID}-functions ]; then
   . /sbin/${MODID}-functions
 else
   echo "! Can't find functions script! Aborting!"; exit 1
-fi  
-
-#=========================== Set Log Files
-#mount -o remount,rw $CACHELOC 2>/dev/null
-#mount -o rw,remount $CACHELOC 2>/dev/null
-# > Logs should go in this file
-LOG=$TMPLOGLOC/${MODID}.log
-oldLOG=$TMPLOGLOC/${MODID}-old.log
-# > Verbose output goes here
-VERLOG=$TMPLOGLOC/${MODID}-verbose.log
-oldVERLOG=$TMPLOGLOC/${MODID}-verbose-old.log
-
-# Start Logging verbosely
-mv -f $VERLOG $oldVERLOG 2>/dev/null
-exec 2>$VERLOG
-set -x 2>&1 >/dev/null
-
-
-log_start
+fi
 
 MODULESPATH=/data/adb/modules
 setabort=0
