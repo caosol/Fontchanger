@@ -14,18 +14,17 @@ get_file_value() {
 
 MODID=Fontchanger
 MAGISK_VER_CODE="$(echo $(get_file_value /data/adb/magisk/util_functions.sh MAGISK_VER_CODE) | sed 's|-.*||')"
-FCDIR=/storage/emulated/0/Fontchanger
 MODPATH=/data/adb/modules/$MODID
 
 
 mkdir -p /sbin/.$MODID
-if [[ -h /sbin/.$MODID/$MODID && -d /sbin/.$MODID/$MODID ]]; then
+if [ -h /sbin/.$MODID/$MODID ] && [ -d /sbin/.$MODID/$MODID ]; then
   rm /sbin/.$MODID/$MODID
 else
   rm -rf /sbin/.$MODID/$MODID 2>&1
 fi
 if [ ${MAGISK_VER_CODE} -gt 18100 ]; then
-  ln -s $MODPATH /sbin/.$MODID/$MODID
+  ln -fs $MODPATH /sbin/.$MODID/$MODID
 else
   cp -a $MODPATH /sbin/.$MODID/$MODID
 fi
