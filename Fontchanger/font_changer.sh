@@ -52,8 +52,6 @@ oldstdoutLOG=$TMPDIRLOC/$MODID-STDOUT-old.log
 
 # Start Logging verbosely
 mv -f $VERLOG $oldVERLOG 2>/dev/null
-exec 3>&1
-exec 1>$stdoutLOG
 exec 2>$VERLOG
 set -x 2>&1 >/dev/null
 
