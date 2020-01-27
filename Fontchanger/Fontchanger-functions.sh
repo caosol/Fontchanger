@@ -4,7 +4,7 @@
 #######################################################################################################
 invalid() {
   echo -e "${R}Invaild Option...${N}"
-  sleep 3
+  $SLEEP 3
   clear
 }
 
@@ -55,7 +55,7 @@ font_reboot_menu() {
 retry() {
   echo -e "${R}[!] FONT WAS NOT APPLIED [!]${N}"
   echo -e "${R} PLEASE TRY AGAIN${N}"
-  sleep 3
+  $SLEEP 3
   clear
 }
 
@@ -217,7 +217,7 @@ collect_logs() {
     exit 1
   }
   #  tar -zcvf Fontchanger_logs.tar.xz Fontchanger_logs >> $LOG
-  zip -r9v "Fontchanger_logs.zip" ./*
+  $ZIP -r9v "Fontchanger_logs.zip" ./*
 
   # Copy package to internal storage
   cp -f $TMPLOGLOC/Fontchanger_logs.zip $FCDIR >>$LOG
@@ -345,12 +345,12 @@ EOF
 #######################################################################################################
 apply_emoji() {
   echo -e "${B}Applying Emoji. Please Wait...${N}"
-  sleep 2
+  $SLEEP 2
   emojichoice="$(grep -w $choice $MODPATH/emojilist.txt | tr -d '[' | tr -d ']' | tr -d $choice | tr -d ' ')"
   rm -f $MODPATH/product/fonts/*Emoji*.ttf
   rm -f $MODPATH/system/product/fonts/*Emoji*.ttf
   rm -f $MODPATH/system/fonts/*Emoji*.ttf
-  [ -e $FCDIR/Emojis/$emojichoice.zip ] || curl -k -o "$FCDIR/Emojis/$emojichoice.zip" https://john-fawkes.com/Downloads/emoji/$emojichoice.zip
+  [ -e $FCDIR/Emojis/$emojichoice.zip ] || $CURL -k -o "$FCDIR/Emojis/$emojichoice.zip" https://john-fawkes.com/Downloads/emoji/$emojichoice.zip
   mkdir -p $FCDIR/Emojis/$emojichoice
   unzip -o "$FCDIR/Emojis/$emojichoice.zip" -d $FCDIR/Emojis/$emojichoice
   if [ -d $MIRROR/product/fonts ]; then
@@ -397,7 +397,7 @@ apply_emoji() {
   else
     echo -e "${R}[!] Emoji WAS NOT APPLIED [!]${N}"
     echo -e "${R} PLEASE TRY AGAIN${N}"
-    sleep 3
+    $SLEEP 3
     clear
     emoji_menu
   fi
@@ -464,7 +464,7 @@ emoji_menu() {
 #######################################################################################################
 apply_custom_emoji() {
   echo -e "${B}Applying Custom Emoji Please Wait...${N}"
-  sleep 2
+  $SLEEP 2
   cusemojichoice="$(grep -w $choice $MODPATH/customemojilist.txt | tr -d [ ] | tr -d $choice | tr -d ' ')"
   rm -f $MODPATH/product/fonts/*Emoji*.ttf
   rm -f $MODPATH/system/product/fonts/*Emoji*.ttf
@@ -510,7 +510,7 @@ apply_custom_emoji() {
   else
     echo -e "${R}[!] Emoji WAS NOT APPLIED [!]${N}"
     echo -e "${R} PLEASE TRY AGAIN${N}"
-    sleep 3
+    $SLEEP 3
     clear
     emoji_menu
   fi
@@ -521,7 +521,7 @@ list_custom_emoji() {
   rm $MODPATH/customemojilist.txt
   touch $MODPATH/customemojilist.txt
   for i in $(find "$FCDIR/Emojis/Custom" | sort); do
-    sleep 0.1
+    $SLEEP 0.1
     echo -e "[$num] $i" >>$MODPATH/customemojilist.txt && echo -e "${W}[$num]${N} ${B}$i${N}"
     num=$((num + 1))
   done
@@ -573,7 +573,7 @@ custom_emoji_menu() {
 #######################################################################################################
 apply_custom_font() {
   echo -e "${B}Applying Custom Font Please Wait...${N}"
-  sleep 12
+  $SLEEP 2
   choice2="$(grep -w $choice $MODPATH/customfontlist.txt | tr -d '[' | tr -d ']' | tr -d "$choice" | tr -d ' ')"
   cusfont=$(cat $MODPATH/listforcustom.txt)
   if [ -e $FCDIR/dump.txt ]; then
@@ -654,7 +654,7 @@ list_custom_fonts() {
   rm $MODPATH/customfontlist.txt
   touch $MODPATH/customfontlist.txt
   for i in $(find "$FCDIR/Fonts/Custom/" -type d | sed 's#.*/##'); do
-    sleep 0.1
+    $SLEEP 0.1
     echo -e "[$num] $i" >>$MODPATH/customfontlist.txt && echo -e "${W}[$num]${N} ${B}$i${N}"
     num=$((num + 1))
   done
@@ -707,7 +707,7 @@ custom_menu() {
 apply_font() {
   choice2="$(grep -w $choice $MODPATH/fontlist.txt | tr -d '[' | tr -d ']' | tr -d "$choice" | tr -d ' ')"
   echo -e "${B}Applying Font. Please Wait...${N}"
-  sleep 2
+  $SLEEP 2
   for i in $MODPATH/*/*/*Emoji*.ttf; do
     if [ -e $i ]; then
       mv -f $i $MODPATH
@@ -719,7 +719,7 @@ apply_font() {
   if [ -d $MODPATH/product ]; then
     rm -rf $MODPATH/product
   fi
-  [ -e $FCDIR/Fonts/$choice2.zip ] || curl -k -o "$FCDIR/Fonts/$choice2.zip" https://john-fawkes.com/Downloads/$choice2.zip
+  [ -e $FCDIR/Fonts/$choice2.zip ] || $CURL -k -o "$FCDIR/Fonts/$choice2.zip" https://john-fawkes.com/Downloads/$choice2.zip
   mkdir -p $FCDIR/Fonts/$choice2
   unzip -o "$FCDIR/Fonts/$choice2.zip" -d $FCDIR/Fonts/$choice2
   if [ -d $MIRROR/product/fonts ]; then
@@ -834,7 +834,7 @@ font_menu() {
 apply_avfont() {
   choice2="$(grep -w $choice $MODPATH/avfontlist.txt | tr -d '[' | tr -d ']' | tr -d "$choice" | tr -d ' ')"
   echo -e "${B}Applying Font. Please Wait...${N}"
-  sleep 2
+  $SLEEP 2
   for i in $MODPATH/*/*/*Emoji*.ttf; do
     if [ -e $i ]; then
       mv -f $i $MODPATH
@@ -846,7 +846,7 @@ apply_avfont() {
   if [ -d $MODPATH/product ]; then
     rm -rf $MODPATH/product
   fi
-  [ -e $FCDIR/Fonts/avfonts/$choice2.zip ] || curl -k -o "$FCDIR/Fonts/avfonts/$choice2.zip" https://john-fawkes.com/Downloads/avfonts/$choice2.zip
+  [ -e $FCDIR/Fonts/avfonts/$choice2.zip ] || $CURL -k -o "$FCDIR/Fonts/avfonts/$choice2.zip" https://john-fawkes.com/Downloads/avfonts/$choice2.zip
   mkdir -p $FCDIR/Fonts/avfonts/$choice2
   unzip -o "$FCDIR/Fonts/avfonts/$choice2.zip" -d $FCDIR/Fonts/avfonts/$choice2
   if [ -d $MIRROR/product/fonts ]; then
@@ -1015,7 +1015,7 @@ default_menu() {
       ;;
     *)
       invaild
-      sleep 1.5
+      $SLEEP 1.5
       ;;
     esac
     echo -e "${B}Would You like to Keep Your Emojis?${N}"
@@ -1072,7 +1072,7 @@ default_menu() {
       ;;
     *)
       invaild
-      sleep 1.5
+      $SLEEP 1.5
       ;;
     esac
   done
@@ -1084,7 +1084,7 @@ default_menu() {
 apply_user_font() {
   choice2="$(grep -w $choice $MODPATH/userfontlist.txt | tr -d '[' | tr -d ']' | tr -d "$choice" | tr -d ' ')"
   echo -e "${B}Applying Font. Please Wait...${N}"
-  sleep 2
+  $SLEEP 2
   for i in $MODPATH/*/*/*Emoji*.ttf; do
     if [ -e $i ]; then
       mv -f $i $MODPATH
@@ -1096,7 +1096,7 @@ apply_user_font() {
   if [ -d $MODPATH/product ]; then
     rm -rf $MODPATH/product
   fi
-  [ -e $FCDIR/Fonts/User/$choice2.zip ] || curl -k -o "$FCDIR/Fonts/User/$choice2.zip" https://john-fawkes.com/Downloads/User/$choice2.zip
+  [ -e $FCDIR/Fonts/User/$choice2.zip ] || $CURL -k -o "$FCDIR/Fonts/User/$choice2.zip" https://john-fawkes.com/Downloads/User/$choice2.zip
   mkdir -p $FCDIR/Fonts/User/$choice2
   unzip -o "$FCDIR/Fonts/User/$choice2.zip" -d $FCDIR/Fonts/User/$choice2
   if [ -d $MIRROR/product/fonts ]; then
@@ -1229,7 +1229,7 @@ update_lists() {
     if "$CON1" || "$CON2" || "$CON3"; then
       rm $FCDIR/fonts-list.txt
       mkdir -p $FCDIR/Fonts/Custom
-      curl -k -o $FCDIR/fonts-list.txt https://john-fawkes.com/Downloads/fontlist/fonts-list.txt
+      $CURL -k -o $FCDIR/fonts-list.txt https://john-fawkes.com/Downloads/fontlist/fonts-list.txt
       if [ $instVer != $currVer ]; then
         echo -e " [-] Fonts Lists Downloaded Successfully... [-] "
       else
@@ -1253,7 +1253,7 @@ update_lists() {
     if "$CON1" || "$CON2" || "$CON3"; then
       rm $FCDIR/emojis-list.txt
       mkdir -p $FCDIR/Emojis/Custom
-      curl -k -o $FCDIR/emojis-list.txt https://john-fawkes.com/Downloads/emojilist/emojis-list.txt
+      $CURL -k -o $FCDIR/emojis-list.txt https://john-fawkes.com/Downloads/emojilist/emojis-list.txt
       if [ $instVer2 != $currVer2 ]; then
         echo -e " [-] Emoji Lists Downloaded Successfully... [-] "
       else
@@ -1277,7 +1277,7 @@ update_lists() {
     if "$CON1" || "$CON2" || "$CON3"; then
       rm $FCDIR/user-fonts-list.txt
       mkdir -p $FCDIR/Fonts/User
-      curl -k -o $FCDIR/user-fonts-list.txt https://john-fawkes.com/Downloads/userfontlist/user-fonts-list.txt
+      $CURL -k -o $FCDIR/user-fonts-list.txt https://john-fawkes.com/Downloads/userfontlist/user-fonts-list.txt
       if [ $instVer3 != $currVer3 ]; then
         echo -e " [-] User Fonts Lists Downloaded Successfully... [-] "
       else
@@ -1301,7 +1301,7 @@ update_lists() {
     if "$CON1" || "$CON2" || "$CON3"; then
       rm $FCDIR/avfonts-list.txt
       mkdir -p $FCDIR/Fonts/avfonts
-      curl -k -o $FCDIR/avfonts-list.txt https://john-fawkes.com/Downloads/avfontlist/avfonts-list.txt
+      $CURL -k -o $FCDIR/avfonts-list.txt https://john-fawkes.com/Downloads/avfontlist/avfonts-list.txt
       if [ $instVer4 != $currVer4 ]; then
         echo " [-] avFonts Lists Downloaded Successfully... [-] "
       else
@@ -1361,7 +1361,7 @@ font_clear_menu() {
       ;;
       *)
         invaild
-        sleep 1.5
+        $SLEEP 1.5
       ;;
     esac
   done
@@ -1411,7 +1411,7 @@ emoji_clear_menu() {
       ;;
       *)
         invaild
-        sleep 1.5
+        $SLEEP 1.5
       ;;
     esac
   done
@@ -1541,7 +1541,7 @@ random_menu() {
       choice3="$(sed -n ${choice}p $FCDIR/fonts-list.txt)"
       choice2="$(echo -e $choice3 | sed 's/.zip//')"
       #    choice2="$(sed -n ${choice}p $FCDIR/fonts-list.txt | tr -d '.zip')"
-      sleep 2
+      $SLEEP 2
       for i in $MODPATH/*/*/*Emoji*.ttf; do
         if [ -e $i ]; then
           mv -f $i $MODPATH
@@ -1549,7 +1549,7 @@ random_menu() {
       done
       rm -rf $MODPATH/system
       rm -rf $MODPATH/product
-      [ -e $FCDIR/Fonts/$choice2.zip ] || curl -k -o "$FCDIR/Fonts/$choice2.zip" https://john-fawkes.com/Downloads/$choice2.zip
+      [ -e $FCDIR/Fonts/$choice2.zip ] || $CURL -k -o "$FCDIR/Fonts/$choice2.zip" https://john-fawkes.com/Downloads/$choice2.zip
       mkdir -p $FCDIR/Fonts/$choice2
       unzip -o "$FCDIR/Fonts/$choice2.zip" -d $FCDIR/Fonts/$choice2
       if [ -d $MIRROR/product/fonts ]; then
@@ -1600,7 +1600,7 @@ random_menu() {
       ;;
     *)
       invaild
-      sleep 1.5
+      $SLEEP 1.5
       ;;
     esac
   done
@@ -1738,7 +1738,7 @@ choose_help_menu() {
       echo -e "${Y}[-] Shortcut Flags Help Selected...${N}"
       #        help
       echo -e "${R}SHORTCUT FLAGS HAVE BEEN REMOVED UNTIL FURTHER NOTICE. I NEED TIME TO CLEAN THE CODE UP. THANKS AND ENJOY FONTCHANGER${N}"
-      sleep 5
+      $SLEEP 5
       break
       ;;
     r)

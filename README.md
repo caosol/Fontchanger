@@ -47,23 +47,26 @@
 - If you would like to donate to me you can do so by going to <a href="https://paypal.me/BBarber61">PayPal</a>
 
 ## Changelog
-## v2.7.0.0 - 11.26.2020
+## v2.7.0.1 - 1.26.2020
+* Change aliases to Variables for bash
+
+## v2.7.0.0 - 1.26.2020
 * Fix big mistake in alias
 
-## v2.6.0.8 - 11.26.2020
+## v2.6.0.8 - 1.26.2020
 * Hopefully fix any internal storage issues
 * Update curl
 
-## v2.6.0.7 - 11.26.2020
+## v2.6.0.7 - 1.26.2020
 * Finally fix internal storage issues
 
-## v2.6.0.6 - 11.26.2020
+## v2.6.0.6 - 1.26.2020
 * Fix internal storage access issue
 
-## v2.6.0.5 - 11.26.2020
+## v2.6.0.5 - 1.26.2020
 * Fix service.sh
 
-## v2.6.0.4 - 11.26.2020
+## v2.6.0.4 - 1.26.2020
 * Fix fonts not applying correctly
 * Add support for LG stock Rom on Pie
 * Fix delete zips, move them to seperate menus
@@ -72,13 +75,13 @@
 * Rename common folder to tools
 * Fix symlink from $MODPATH to /sbin/Fontchanger
 
-## v2.6.0.3 - 11.21.2020
+## v2.6.0.3 - 1.21.2020
 * Fix issue with checking for empty directories
 
-## v2.6.0.2 - 11.21.2020
+## v2.6.0.2 - 1.21.2020
 * Fix issues with apps not opening and fonts not showing in terminal and internal storage issues
 
-## v2.6.0.1 - 11.21.2020
+## v2.6.0.1 - 1.21.2020
 * Fix Return to Menu Options
 
 ## v2.6.0.0 - 11.20.2019 - 1.21.2020

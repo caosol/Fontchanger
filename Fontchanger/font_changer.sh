@@ -27,10 +27,11 @@ CFONT=$MODPATH/currentfont.txt
 CEMOJI=$MODPATH/currentemoji.txt
 MIRROR=/sbin/.magisk/mirror
 
-alias curl=$MODPATH/curl
-alias sleep=$MODPATH/sleep
+
+CURL=$MODPATH/curl
+SLEEP=$MODPATH/sleep
 #alias xmlstarlet=$MODPATH/xmlstarlet
-alias zip=$MODPATH/zip
+ZIP=$MODPATH/zip
 
 if [ -z "$(echo -e $PATH | grep /sbin:)" ]; then
  alias resetprop="/data/adb/magisk/magisk resetprop"
@@ -250,7 +251,7 @@ e_spinner() {
   h=0; anim='-\|/';
   while [ -d /proc/$PID ]; do
     h=$(((h+1)%4))
-    sleep 0.02
+    $SLEEP 0.02
     printf "\r${@} [${anim:$h:1}]"
   done
 }                                                                       
@@ -264,7 +265,7 @@ test_connection() {
 }
 
 test_connection2() {
-  case "$(curl -s --max-time 2 -I http://google.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
+  case "$($CURL -s --max-time 2 -I http://google.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
   [23]) echo " [-] HTTP connectivity is up [-] "
     CON1=false
     CON2=true
@@ -415,7 +416,7 @@ menu() {
     fi
     echo -e "${B}[-] Select an Option...${N}"
     echo -e " "
-    sleep 1
+    $SLEEP 1
     echo -e "${W}[1]${N} ${G} - Fonts${N}"
     echo -e " "
     echo -e "${W}[2]${N} ${G} - Emojis${N}"
@@ -473,7 +474,7 @@ menu() {
       ;;
       *)
         echo -e "${Y}[!] Item Not Available! Try Again [!]${N}"
-        sleep 1.5
+        $SLEEP 1.5
         clear
       ;;
     esac
