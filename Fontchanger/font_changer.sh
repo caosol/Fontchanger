@@ -27,6 +27,40 @@ CFONT=$MODPATH/currentfont.txt
 CEMOJI=$MODPATH/currentemoji.txt
 MIRROR=/sbin/.magisk/mirror
 
+alias curl=$MODPATH/curl
+alias sleep=$MODPATH/sleep
+#alias xmlstarlet=$MODPATH/xmlstarlet
+alias zip=$MODPATH/zip
+
+if [ -z "$(echo -e $PATH | grep /sbin:)" ]; then
+ alias resetprop="/data/adb/magisk/magisk resetprop"
+fi
+
+# Set Busybox up
+if [ -d /data/adb/modules/busybox-ndk ]; then
+  BUSY=$(find /data/adb/modules/busybox-ndk/system/* -maxdepth 0 | sed 's#.*/##')
+  for i in $BUSY; do
+    PATH=/data/adb/modules/busybox-ndk/system/$i/busybox:$PATH
+    _bb=/data/adb/modules/busybox-ndk/system/$i/busybox
+    BBox=true
+  done
+elif [ -f $MODPATH/busybox ]; then
+  PATH=$MODPATH/busybox:$PATH
+  _bb=$MODPATH/busybox
+  BBox=true
+elif [ -f /data/adb/magisk/busybox ]; then
+  PATH=/data/adb/magisk/busybox:PATH
+  _bb=/data/adb/magisk/busybox
+  BBox=true	
+fi
+
+[ -n "$ANDROID_SOCKET_adbd" ] && alias clear='echo'
+_bbname="$($_bb | head -n1 | awk '{print $1,$2}')"
+if [ "$_bbname" == "" ]; then
+  _bbname="BusyBox not found!"
+  BBox=false
+fi
+
 quit() {
   PATH=$OLDPATH
   exit $?
@@ -89,40 +123,6 @@ if [[ $setabort == 1 ]]; then
   ui_print " [!] Remove all Conflicting Font Modules before Continuing [!] "
   abort
 fi
-
-# Set Busybox up
-if [ -d /data/adb/modules/busybox-ndk ]; then
-  BUSY=$(find /data/adb/modules/busybox-ndk/system/* -maxdepth 0 | sed 's#.*/##')
-  for i in $BUSY; do
-    PATH=/data/adb/modules/busybox-ndk/system/$i/busybox:$PATH
-    _bb=/data/adb/modules/busybox-ndk/system/$i/busybox
-    BBox=true
-  done
-elif [ -f $MODPATH/busybox ]; then
-  PATH=$MODPATH/busybox:$PATH
-  _bb=$MODPATH/busybox
-  BBox=true
-elif [ -f /data/adb/magisk/busybox ]; then
-  PATH=/data/adb/magisk/busybox:PATH
-  _bb=/data/adb/magisk/busybox
-  BBox=true	
-fi
-
-if [ -z "$(echo -e $PATH | grep /sbin:)" ]; then
- alias resetprop="/data/adb/magisk/magisk resetprop"
-fi
-
-[ -n "$ANDROID_SOCKET_adbd" ] && alias clear='echo'
-_bbname="$($_bb | head -n1 | awk '{print $1,$2}')"
-if [ "$_bbname" == "" ]; then
-  _bbname="BusyBox not found!"
-  BBox=false
-fi
-
-alias curl=$MODPATH/curl
-alias sleep=$MODPATH/sleep
-#alias xmlstarlet=$MODPATH/xmlstarlet
-alias zip=$MODPATH/zip
 
 # Functions
 # Abort
