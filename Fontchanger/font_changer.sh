@@ -86,14 +86,14 @@ elif [ -d /data/adb/modules/busybox-ndk ]; then
     _bb=/data/adb/modules/busybox-ndk/system/$i/busybox
     BBox=true
   done
+elif [ -d /data/adb/magisk/busybox ]; then
+  PATH=/data/adb/magisk/busybox:PATH
+  _bb=/data/adb/magisk/busybox
+  BBox=true
 elif [ -f $MODPATH/busybox ]; then
   PATH=$MODPATH/busybox:$PATH
   _bb=$MODPATH/busybox
   BBox=true
-elif [ -f /data/adb/magisk/busybox ]; then
-  PATH=/data/adb/magisk/busybox:PATH
-  _bb=/data/adb/magisk/busybox
-  BBox=true	
 fi
 
 set_busybox $_bb
