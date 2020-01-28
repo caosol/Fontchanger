@@ -47,6 +47,9 @@
 - If you would like to donate to me you can do so by going to <a href="https://paypal.me/BBarber61">PayPal</a>
 
 ## Changelog
+## v2.7.0.4 - 1.28.2020
+* Stupid bash doesnt transfer alias between scripts when calling a script within a script
+
 ## v2.7.0.3 - 1.27.2020
 * Fix Busybox issues
 

@@ -2,6 +2,55 @@
 #######################################################################################################
 #                                              Leave Menu                                             #
 #######################################################################################################
+# Variables:
+#  BBok - If busybox detection was ok (true/false)
+#  _bb - Busybox binary directory
+#  _bbname - Busybox name
+
+# set_busybox <busybox binary>
+# alias busybox applets
+set_busybox() {
+  if [ -x "$1" ]; then
+    for i in $(${1} --list); do
+      if [ "$i" != 'echo' ] || [ "$i" != 'zip' ] || [ "$1" != 'sleep' ]; then
+        alias "$i"="${1} $i" >/dev/null 2>&1
+      fi
+    done
+    _busybox=true
+    _bb=$1
+  fi
+}
+_busybox=false
+
+if $_busybox; then
+  true
+elif [ -d /data/adb/modules/busybox-ndk ]; then
+  BUSY=$(find /data/adb/modules/busybox-ndk/system/* -maxdepth 0 | sed 's#.*/##')
+  for i in $BUSY; do
+    PATH=/data/adb/modules/busybox-ndk/system/$i:$PATH
+    _bb=/data/adb/modules/busybox-ndk/system/$i/busybox
+    BBox=true
+  done
+elif [ -d /sbin/.magisk/busybox ]; then
+  PATH=/sbin/.magisk/busybox:$PATH
+  _bb=/sbin/.magisk/busybox/busybox
+  BBox=true
+elif [ -f $MODPATH/busybox ]; then
+  PATH=$MODPATH/busybox:$PATH
+  _bb=$MODPATH/busybox
+  BBox=true
+fi
+
+set_busybox $_bb
+[ $? -ne 0 ] && exit $?
+[ -n "$ANDROID_SOCKET_adbd" ] && alias clear='echo'
+_bbname="$($_bb | head -n1 | awk '{print $1,$2}')"
+if [ "$_bbname" == "" ]; then
+  _bbname="BusyBox not found!"
+  BBox=false
+fi
+
+
 invalid() {
   echo -e "${R}Invaild Option...${N}"
   $SLEEP 3
