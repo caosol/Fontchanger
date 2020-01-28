@@ -16,7 +16,7 @@ MODID=Fontchanger
 MODPATH=/data/adb/modules/$MODID
 
 if [ -d /sbin/.$MODID/$MODID ]; then
-  rm /sbin/.$MODID/$MODID 2>&1
+  rm -rf /sbin/.$MODID/$MODID 2>&1
   mkdir -p /sbin/.$MODID 2>&1
 else
   mkdir -p /sbin/.$MODID 2>&1
