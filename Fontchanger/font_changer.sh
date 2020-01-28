@@ -82,13 +82,13 @@ if $_busybox; then
 elif [ -d /data/adb/modules/busybox-ndk ]; then
   BUSY=$(find /data/adb/modules/busybox-ndk/system/* -maxdepth 0 | sed 's#.*/##')
   for i in $BUSY; do
-    PATH=/data/adb/modules/busybox-ndk/system/$i/busybox:$PATH
+    PATH=/data/adb/modules/busybox-ndk/system/$i:$PATH
     _bb=/data/adb/modules/busybox-ndk/system/$i/busybox
     BBox=true
   done
-elif [ -f /data/adb/magisk/busybox ]; then
-  PATH=/data/adb/magisk/busybox:PATH
-  _bb=/data/adb/magisk/busybox
+elif [ -d /sbin/.magisk/busybox ]; then
+  PATH=/sbin/.magisk/busybox:$PATH
+  _bb=/sbin/.magisk/busybox/busybox
   BBox=true
 elif [ -f $MODPATH/busybox ]; then
   PATH=$MODPATH/busybox:$PATH
