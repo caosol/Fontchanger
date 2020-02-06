@@ -24,6 +24,56 @@
 ## Using The Custom Option
 * Watch the video tutorial at <a href="https://john-fawkes.com/fontchanger.html">Fontchanger Custom Tutorial</a> or <a href="https://www.youtube.com/watch?v=YLUl5X-uVZc">Fontchanger Youtube link</a> to learn how to setup the fonts! This is a 43 minute long video and is very simple to follow but is the only way unfortunately to do the custom option. Hopefully one day I can create an app to make the process a little easier. 
 
+## Shortcut Options
+
+  -a|--avfont [font name]     apply an avfont
+  e.g., font_changer -a Font_UbuntuLight
+  e.g., font_changer --font Font_UbuntuLight
+
+  -c|--cemoji [custom emoji]  apply the custom emoji
+  e.g., font_changer -c <name of custom emoji>
+  e.g., font_changer --cemoji <name of custom emoji>
+  
+  -d|--cfont [custom font]    apply a custom font
+  e.g., font_changer -d <name of custom font>
+  e.g., font_changer --cfont <name of custom font>
+
+  -e|--emoji [emoji]          apply an emoji
+  e.g., font_changer -e <name of emoji>
+  e.g., font_changer --emoji <name of emoji>
+
+  -f|--font [font]            apply a font from downloadable list
+  e.g., font_changer -f <name of font>
+  e.g., font_changer --font <name of font>
+
+  -h|--help                   show this message
+  e.g., font_changer -h
+  e.g., font_changer --help
+
+  -m|--restoreemoji           restore just stock emoji but keep fontchanger font
+  e.g., font_changer -m
+  e.g., font_changer --restoreemoji
+
+  -n|--restorefont            restore just stock font but keep fontchanger emoji
+  e.g., font_changer -n
+  e.g., font_changer --restorefont
+
+  -r|--random                 apply a random font
+  e.g., font_changer -r
+  e.g., font_changer --random
+
+  -s|--current                show current font
+  e.g., font_changer -s
+  e.g., font_changer --current
+  
+  -t|--randomav               apply a random avfont font
+  e.g., font_changer -t
+  e.g., font_changer --randomav
+
+  -z|--delete                 delete downloaded font and emoji zips if they exist
+  e.g., font_changer -z
+  e.g., font_changer --delete
+
 ## Support
 - Please open an issue on my github page <a href="https://github.com/Magisk-Modules-Repo/fontchanger"> Github </a> or if your on Telegram please join <a href="https://t.me/fontchange_magisk"> Telegram </a> Telegram i will see and fix the issue faster as I am always on Telegram.
 
@@ -47,6 +97,13 @@
 - If you would like to donate to me you can do so by going to <a href="https://paypal.me/BBarber61">PayPal</a>
 
 ## Changelog
+## v2.8.0.0 - 2.2.2020
+* Readd shortcut options. 
+* Typos/bug fixes
+* Now when you apply an avfont CURRENT= will show AVfont-<name of font>
+* Add a random option. Will apply a random font
+* Add a random avfont option
+
 ## v2.7.0.4 - 1.28.2020
 * Stupid bash doesnt transfer alias between scripts when calling a script within a script
 
