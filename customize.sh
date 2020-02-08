@@ -66,22 +66,6 @@ test_connection2() {
 esac
 }
 
-test_connection3() {
-  $TMPDIR/busybox-$ARCH32 wget -q --tries=5 --timeout=10 http://www.google.com -O $TMPDIR/google.idx >/dev/null 2>&1
-if [ ! -s $TMPDIR/google.idx ]; then
-  ui_print " [!] Not Connected... [!] "
-  CON1=false
-  CON2=false
-  CON3=false
-else
-  ui_print " [-] Connected..! [-] "
-  CON1=false
-  CON2=false
-  CON3=true
-fi
-rm -f $TMPDIR/google.idx
-}
-
 get_var() { sed -n 's/^name=//p' ${1}; }
 
 set_vars() {
@@ -170,14 +154,14 @@ if $BOOTMODE; then
   chmod 0755 $TMPDIR/curl-$ARCH32
   chmod 0755 $TMPDIR/busybox-$ARCH32
   ui_print " [-] Checking For Internet Connection... [-] "
-  test_connection3
-  if ! "$CON3"; then
+  test_connection
+  if ! "$CON1"; then
     test_connection2
     if ! "$CON2"; then
-      test_connection
+      abort " [!] Internet Connection is Needed... [!]"
     fi
   fi
-  if "$CON1" || "$CON2" || "$CON3"; then
+  if "$CON1" || "$CON2"; then
     for i in /storage/emulated/0/Fontchanger/*-list.txt; do
       if [ -e $i ]; then
         rm $i 2>&1
