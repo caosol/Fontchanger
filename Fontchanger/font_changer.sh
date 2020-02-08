@@ -305,32 +305,18 @@ test_connection2() {
   esac
 }
 
-test_connection3() {
-  wget -q --tries=5 --timeout=10 http://www.google.com -O $MODPATH/google.idx >/dev/null 2>&1
-  if [ ! -s $MODPATH/google.idx ]; then
-    echo " [!] Not Connected... [!] "
-    NCON3=true
-  else
-    echo " [-] Connected..! [-] "
-    CON1=false
-    CON2=false
-    CON3=true
-  fi
-  rm -f $MODPATH/google.idx
-}
-
 # Log files will be uploaded to termbin.com
 # Logs included: VERLOG LOG oldVERLOG oldLOG
 upload_logs() {
   $BBox && {
-  test_connection3
-  if ! "$CON3"; then
+  test_connection
+  if ! "$CON1"; then
     test_connection2
     if ! "$CON2"; then
-      test_connection
+      abort " [!] Internet Connection is Needed... [!]"
     fi
   fi
-  if "$CON1" || "$CON2" || "$CON3"; then
+  if "$CON1" || "$CON2"; then
       echo -e "Uploading logs"
       [ -s $VERLOG ] && verUp=$(cat $VERLOG | nc termbin.com 9999) || verUp=none
       [ -s $oldVERLOG ] && oldverUp=$(cat $oldVERLOG | nc termbin.com 9999) || oldverUp=none
