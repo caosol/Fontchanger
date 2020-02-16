@@ -2,10 +2,10 @@
 
 <div align="center">
   <!-- Version -->
-    <img src="https://img.shields.io/badge/Version-v2.7.0.1-blue.svg?longCache=true&style=popout-square"
+    <img src="https://img.shields.io/badge/Version-v2.9.0.0-blue.svg?longCache=true&style=popout-square"
       alt="Version" />
   <!-- Last Updated -->
-    <img src="https://img.shields.io/badge/Updated-January 26, 2020-green.svg?longCache=true&style=flat-square"
+    <img src="https://img.shields.io/badge/Updated-February 16, 2020-green.svg?longCache=true&style=flat-square"
       alt="_time_stamp_" />
 </div>
 
@@ -96,7 +96,14 @@
 ## Donation
 - If you would like to donate to me you can do so by going to <a href="https://paypal.me/BBarber61">PayPal</a>
 
+- You can also donate monthly by visting <a href="https://github.com/sponsors/JohnFawkes">Github Sponsorship</a>
+
 ## Changelog
+## v2.9.0.0 - 2.16.2020
+* Check for script updates and rerun font_changer if updates are available
+* Make it so I'll never need to release a zip ever again. All scripts/binaries needed will be downloaded if they are updated
+* Remove /sbin symlink
+
 ## v2.8.0.0 - 2.2.2020
 * Readd shortcut options. 
 * Typos/bug fixes
