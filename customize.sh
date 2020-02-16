@@ -10,7 +10,7 @@ SKIPUNZIP=1
 set_busybox() {
   if [ -x "$1" ]; then
     for i in $(${1} --list); do
-      if [ "$i" != 'echo' ] || [ "$i" != 'zip' ] || [ "$1" != 'sleep' ]; then
+      if [ "$i" != 'zip' ] || [ "$1" != 'sleep' ]; then
         alias "$i"="${1} $i" >/dev/null 2>&1
       fi
     done
@@ -44,7 +44,6 @@ fi
 
 set_busybox $_bb
 [ $? -ne 0 ] && exit $?
-[ -n "$ANDROID_SOCKET_adbd" ] && alias clear='echo'
 _bbname="$($_bb | head -n1 | awk '{print $1,$2}')"
 if [ "$_bbname" == "" ]; then
   _bbname="BusyBox not found!"
