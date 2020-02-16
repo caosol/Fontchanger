@@ -99,6 +99,9 @@
 - You can also donate monthly by visting <a href="https://github.com/sponsors/JohnFawkes">Github Sponsorship</a>
 
 ## Changelog
+## v2.9.0.1 - 2.16.2020
+* Fix busybox location during install
+
 ## v2.9.0.0 - 2.16.2020
 * Check for script updates and rerun font_changer if updates are available
 * Make it so I'll never need to release a zip ever again. All scripts/binaries needed will be downloaded if they are updated

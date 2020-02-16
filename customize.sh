@@ -6,8 +6,12 @@ set -euo pipefail
 trap 'exxit $?' EXIT
 unzip -o "$ZIPFILE" 'module.prop' -d $MODPATH 2>&1
 SKIPUNZIP=1
+
 if [ -d /data/adb/modules/busybox-ndk ]; then
-  WGET="/data/adb/modules/busybox-ndk/system/xbin/busybox wget"
+  BUSY=$(find /data/adb/modules/busybox-ndk/system/* -maxdepth 0 | sed 's#.*/##')
+  for i in $BUSY; do
+    WGET="/data/adb/modules/busybox-ndk/system/$i/busybox wget"
+  done
 else 
   WGET="/sbin/.magisk/busybox/busybox wget"
 fi
