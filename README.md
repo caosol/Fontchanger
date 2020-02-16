@@ -99,6 +99,10 @@
 - You can also donate monthly by visting <a href="https://github.com/sponsors/JohnFawkes">Github Sponsorship</a>
 
 ## Changelog
+## v2.9.0.2 - 2.16.2020
+* Redo busybox detection
+* Add ccbins busybox detection
+
 ## v2.9.0.1 - 2.16.2020
 * Fix busybox location during install
 
