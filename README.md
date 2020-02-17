@@ -2,7 +2,7 @@
 
 <div align="center">
   <!-- Version -->
-    <img src="https://img.shields.io/badge/Version-v2.9.0.0-blue.svg?longCache=true&style=popout-square"
+    <img src="https://img.shields.io/badge/Version-v2.9.0.3-blue.svg?longCache=true&style=popout-square"
       alt="Version" />
   <!-- Last Updated -->
     <img src="https://img.shields.io/badge/Updated-February 16, 2020-green.svg?longCache=true&style=flat-square"
@@ -99,6 +99,9 @@
 - You can also donate monthly by visting <a href="https://github.com/sponsors/JohnFawkes">Github Sponsorship</a>
 
 ## Changelog
+## v2.9.0.3 - 2.16.2020
+* Finally Fix all install errors                      
+
 ## v2.9.0.2 - 2.16.2020
 * Redo busybox detection
 * Add ccbins busybox detection

@@ -1,4 +1,9 @@
-#!/system/bin/sh
+exxit() {
+  set +euxo pipefail
+  [ $1 -ne 0 ] && abort "$2"
+  exit $1
+}
+
 mkdir -p /storage/emulated/0/Fontchanger/logs
 #mkdir -p /sbin/.$MODID/logs
 exec 2>/storage/emulated/0/Fontchanger/logs/Fontchanger-install-verbose.log
@@ -28,29 +33,20 @@ elif [ -d /sbin/.magisk/modules/busybox-ndk ]; then
   for i in $BUSY; do
     PATH=/sbin/.magisk/modules/busybox-ndk/system/$i:$PATH
     _bb=/sbin/.magisk/modules/busybox-ndk/system/$i/busybox
-    BBox=true
   done
 elif [ -d /sbin/.magisk/modules/ccbins/system/bin/busybox ]; then
   PATH=/sbin/.magisk/modules/ccbins/system/bin:$PATH
   _bb=/sbin/.magisk/modules/ccbins/system/bin/busybox
-  BBox=true
 elif [ -d /sbin/.magisk/modules/ccbins/system/xbin/busybox ]; then
   PATH=/sbin/.magisk/modules/ccbins/system/xbin:$PATH
   _bb=/sbin/.magisk/modules/ccbins/system/xbin/busybox
-  BBox=true
 elif [ -d /sbin/.magisk/busybox ]; then
   PATH=/sbin/.magisk/busybox:$PATH
   _bb=/sbin/.magisk/busybox/busybox
-  BBox=true
 fi
 
 set_busybox $_bb
-[ $? -ne 0 ] && exit $?
-_bbname="$($_bb | head -n1 | awk '{print $1,$2}')"
-if [ "$_bbname" == "" ]; then
-  _bbname="BusyBox not found!"
-  BBox=false
-fi
+[ $? -ne 0 ] && exxit $?
 ui_print " - Downloading Installer Script"
 wget -O $TMPDIR/installer.sh https://github.com/johnfawkes/fontchanger-scripts/raw/master/installer.sh 2>/dev/null
 . $TMPDIR/installer.sh
