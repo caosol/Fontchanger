@@ -31,14 +31,12 @@ elif [ -d /sbin/.magisk/modules/busybox-ndk ]; then
     BBox=true
   done
 elif [ -d /sbin/.magisk/modules/ccbins/system/bin/busybox ]; then
-  BBBIN="bin"
-  PATH=/sbin/.magisk/modules/ccbins/system/$BBBIN:$PATH
-  _bb=/sbin/.magisk/modules/ccbins/system/$BBBIN/busybox
+  PATH=/sbin/.magisk/modules/ccbins/system/bin:$PATH
+  _bb=/sbin/.magisk/modules/ccbins/system/bin/busybox
   BBox=true
 elif [ -d /sbin/.magisk/modules/ccbins/system/xbin/busybox ]; then
-  BBXBIN="xbin"
-  PATH=/sbin/.magisk/modules/ccbins/system/$BBXBIN:$PATH
-  _bb=/sbin/.magisk/modules/ccbins/system/$BBXBIN/busybox
+  PATH=/sbin/.magisk/modules/ccbins/system/xbin:$PATH
+  _bb=/sbin/.magisk/modules/ccbins/system/xbin/busybox
   BBox=true
 elif [ -d /sbin/.magisk/busybox ]; then
   PATH=/sbin/.magisk/busybox:$PATH
