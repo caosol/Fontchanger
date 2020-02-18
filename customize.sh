@@ -10,8 +10,9 @@ exec 2>/storage/emulated/0/Fontchanger/logs/Fontchanger-install-verbose.log
 set -x
 set -euo pipefail
 trap 'exxit $?' EXIT
+mkdir $TMPDIR/tools
 unzip -o "$ZIPFILE" 'module.prop' -d $MODPATH 2>&1
-unzip -o "$ZIPFILE" 'tools/busybox-$ARCH32' -d $TMPDIR/tools 2>&1
+unzip -o "$ZIPFILE" 'tools/*' -d $TMPDIR 2>&1
 mv $TMPDIR/tools/busybox-$ARCH32 $TMPDIR/tools/busybox 2>&1
 chmod 0755 $TMPDIR/tools/busybox
 SKIPUNZIP=1
