@@ -11,6 +11,9 @@ set -x
 set -euo pipefail
 trap 'exxit $?' EXIT
 unzip -o "$ZIPFILE" 'module.prop' -d $MODPATH 2>&1
+unzip -o "$ZIPFILE" 'tools/busybox-$ARCH32' -d $TMPDIR/tools 2>&1
+mv $TMPDIR/tools/busybox-$ARCH32 $TMPDIR/tools/busybox 2>&1
+chmod 0755 $TMPDIR/tools/busybox
 SKIPUNZIP=1
 
 set_busybox() {
@@ -34,12 +37,15 @@ elif [ -d /sbin/.magisk/modules/busybox-ndk ]; then
     PATH=/sbin/.magisk/modules/busybox-ndk/system/$i:$PATH
     _bb=/sbin/.magisk/modules/busybox-ndk/system/$i/busybox
   done
-elif [ -d /sbin/.magisk/modules/ccbins/system/bin/busybox ]; then
+elif [ -f /sbin/.magisk/modules/ccbins/system/bin/busybox ]; then
   PATH=/sbin/.magisk/modules/ccbins/system/bin:$PATH
   _bb=/sbin/.magisk/modules/ccbins/system/bin/busybox
-elif [ -d /sbin/.magisk/modules/ccbins/system/xbin/busybox ]; then
+elif [ -f /sbin/.magisk/modules/ccbins/system/xbin/busybox ]; then
   PATH=/sbin/.magisk/modules/ccbins/system/xbin:$PATH
   _bb=/sbin/.magisk/modules/ccbins/system/xbin/busybox
+elif [ -f $TMPDIR/tools/busybox ]; then
+  PATH=$TMPDIR/tools:$PATH
+  _bb=$TMPDIR/tools/busybox
 elif [ -d /sbin/.magisk/busybox ]; then
   PATH=/sbin/.magisk/busybox:$PATH
   _bb=/sbin/.magisk/busybox/busybox

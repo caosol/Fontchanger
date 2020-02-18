@@ -99,8 +99,12 @@
 - You can also donate monthly by visting <a href="https://github.com/sponsors/JohnFawkes">Github Sponsorship</a>
 
 ## Changelog
+## v3.0.0.0 - 2.18.2020
+* This should be the final release of this zip....
+* Any further updates will require you to flash the zip again but shouldnt be required since the terminal command will handle all updates now
+
 ## v2.9.0.3 - 2.16.2020
-* Finally Fix all install errors                      
+* Finally Fix all install errors
 
 ## v2.9.0.2 - 2.16.2020
 * Redo busybox detection
