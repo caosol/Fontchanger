@@ -2,10 +2,10 @@
 
 <div align="center">
   <!-- Version -->
-    <img src="https://img.shields.io/badge/Version-v2.9.0.3-blue.svg?longCache=true&style=popout-square"
+    <img src="https://img.shields.io/badge/Version-v3.0.0.0-blue.svg?longCache=true&style=popout-square"
       alt="Version" />
   <!-- Last Updated -->
-    <img src="https://img.shields.io/badge/Updated-February 16, 2020-green.svg?longCache=true&style=flat-square"
+    <img src="https://img.shields.io/badge/Updated-February 17, 2020-green.svg?longCache=true&style=flat-square"
       alt="_time_stamp_" />
 </div>
 
@@ -22,13 +22,9 @@
 </div>
 
 ## Using The Custom Option
-* Watch the video tutorial at <a href="https://john-fawkes.com/fontchanger.html">Fontchanger Custom Tutorial</a> or <a href="https://www.youtube.com/watch?v=YLUl5X-uVZc">Fontchanger Youtube link</a> to learn how to setup the fonts! This is a 43 minute long video and is very simple to follow but is the only way unfortunately to do the custom option. Hopefully one day I can create an app to make the process a little easier. 
+ 
 
 ## Shortcut Options
-
-  -a|--avfont [font name]     apply an avfont
-  e.g., font_changer -a Font_UbuntuLight
-  e.g., font_changer --font Font_UbuntuLight
 
   -c|--cemoji [custom emoji]  apply the custom emoji
   e.g., font_changer -c <name of custom emoji>
@@ -65,10 +61,6 @@
   -s|--current                show current font
   e.g., font_changer -s
   e.g., font_changer --current
-  
-  -t|--randomav               apply a random avfont font
-  e.g., font_changer -t
-  e.g., font_changer --randomav
 
   -z|--delete                 delete downloaded font and emoji zips if they exist
   e.g., font_changer -z
