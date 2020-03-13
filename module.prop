@@ -1,7 +1,7 @@
 id=Fontchanger
 name=Font Changer
-version=3.0.0.2
-versionCode=63
+version=3.0.0.3
+versionCode=64
 author=John Fawkes
 description=A Terminal Script to Apply 228 Downloadable Fonts and emojis and User Provided Fonts and emojis
 support=https://github.com/johnfawkes/fontchanger or https://t.me/fontchange_magisk
