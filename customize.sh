@@ -1,15 +1,7 @@
-exxit() {
-  set +euxo pipefail
-  [ $1 -ne 0 ] && abort "$2"
-  exit $1
-}
-
 mkdir -p /storage/emulated/0/Fontchanger/logs
 #mkdir -p /sbin/.$MODID/logs
 exec 2>/storage/emulated/0/Fontchanger/logs/Fontchanger-install-verbose.log
-set -x
-set -euo pipefail
-trap 'exxit $?' EXIT
+set -euxo pipefail
 mkdir $TMPDIR/tools
 unzip -o "$ZIPFILE" 'module.prop' -d $MODPATH 2>&1
 unzip -o "$ZIPFILE" 'tools/*' -d $TMPDIR 2>&1
