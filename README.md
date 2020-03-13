@@ -2,10 +2,10 @@
 
 <div align="center">
   <!-- Version -->
-    <img src="https://img.shields.io/badge/Version-v3.0.0.0-blue.svg?longCache=true&style=popout-square"
+    <img src="https://img.shields.io/badge/Version-v3.0.0.1-blue.svg?longCache=true&style=popout-square"
       alt="Version" />
   <!-- Last Updated -->
-    <img src="https://img.shields.io/badge/Updated-February 17, 2020-green.svg?longCache=true&style=flat-square"
+    <img src="https://img.shields.io/badge/Updated-March 05, 2020-green.svg?longCache=true&style=flat-square"
       alt="_time_stamp_" />
 </div>
 
@@ -21,8 +21,17 @@
   </h3>
 </div>
 
+## Bootloops
+If for whatever reason you bootloop and you dont have twrp, just wait 60 seconds in the bootloop and the module will automagically be disabled and your device will reboot automatically and then boot up just fine.
+
 ## Using The Custom Option
- 
+ <div align="center">
+  <h3>
+    <a href="https://github.com/JohnFawkes/android_font_patcher">
+      Walkthrough for Custom Fonts
+    </a>
+  </h3>
+ </div>
 
 ## Shortcut Options
 
@@ -73,7 +82,7 @@
 - Magisk 19.0 +
 - All devices
 - All Android versions ( Now Supports Android 10 )
-- Roboto/Google-Sans/Product-Sans font as default font
+- Roboto/Google-Sans/Product-Sans font as default font (One Plus CAN USE slate font)
 
 ## Credits
 - Font Files from <a href="https://forum.xda-developers.com/android/themes/fonts-flashable-zips-t3219827">@giaton @xdadevelopers</a>
@@ -91,6 +100,9 @@
 - You can also donate monthly by visting <a href="https://github.com/sponsors/JohnFawkes">Github Sponsorship</a>
 
 ## Changelog
+## v3.0.0.1 - 3.05.2020
+* Add code in post-fs-data to prevent bootloops
+
 ## v3.0.0.0 - 2.18.2020
 * This should be the final release of this zip....
 * Any further updates will require you to flash the zip again but shouldnt be required since the terminal command will handle all updates now
