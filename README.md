@@ -100,6 +100,9 @@ If for whatever reason you bootloop and you dont have twrp, just wait 60 seconds
 - You can also donate monthly by visting <a href="https://github.com/sponsors/JohnFawkes">Github Sponsorship</a>
 
 ## Changelog
+## v3.0.0.2 - 3.13.2020
+* Fix install issue
+
 ## v3.0.0.1 - 3.05.2020
 * Add code in post-fs-data to prevent bootloops
 
